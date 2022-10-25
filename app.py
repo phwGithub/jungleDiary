@@ -21,7 +21,7 @@ def home():
    return render_template("monthlyDiary.html",title="정글 다이어리")
 
 
-# 회원가입 페이지로
+### 회원가입 페이지로
 @app.route('/sign_up', methods=['GET'])
 def render_sign_up():
     return render_template('sign_up.html')
@@ -31,7 +31,7 @@ def render_sign_up():
 def render_sign_in():
     return render_template('sign_in.html')
 
-# 가입하기 
+### 가입하기 
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     new_name = request.form['new_name_give']
@@ -50,7 +50,7 @@ def sign_up():
     elif result is not None:
         return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
-
+### 로그인하기
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     username_receive = request.form['input_name']
@@ -80,6 +80,20 @@ def mainpage():
     date = time.strftime('%y %m %d %a', time.localtime(time.time()))
     now_date = date.split(' ')
     return render_template('main.html',title="오늘의 메모",date=now_date)
+
+### 나의 일기 보여주기
+@app.route('/showMyDiary')
+def showMyDiary():
+    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    now_date = date.split(' ')
+    return render_template('monthlyDiary.html',title="나의 일기",date=now_date)
+
+### 모두의 일기 보여주기
+@app.route('/showEveryDiary')
+def showEveryDiary():
+    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    now_date = date.split(' ')
+    return render_template('monthlyDiary.html',title="모두의 일기",date=now_date)
 
 ### 메모 작성
 @app.route('/api/appendMemo', methods=['post'])
