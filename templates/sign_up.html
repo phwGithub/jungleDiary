@@ -22,21 +22,12 @@
     </style>
 
     <script>
-        // todo 
-        // 비밀번호 일치하는지 확인하기 
-        // 회원가입 입력된 정보 보내기
-
 
         function sign_up() {
 
-            check_pwd()
-
-            let username = $("#input-username").val()
-            let password = $("#input-password").val()
-            let password = $("#input-password").val()
-            let password = $("#input-password").val()
-            let password = $("#input-password").val()
-            let password = $("#input-password").val()
+            let username = $("#userid").val()
+            let password = $("#pwd").val()
+            let password_chck = $("#pwd_chck").val()
 
             if (username == "") {
                 alert('아이디를 입력하세요!')
@@ -50,19 +41,26 @@
                 return;
             }
 
+            if (password != password_chck) {
+                alert('비밀번호가 일치하지 않습니다')
+                $("#pwd_chck").focus()
+                return;
+            }
+
+
             $.ajax({
                 type: "POST",
-                url: "/signin",
+                url: "/signup",
                 data: {
-                    input_name: username,
-                    input_pwd: password
+                    new_name_give: username,
+                    new_pwd_give: password
                 },
                 success: function (response) {
                     if (response['result'] == 'success') {
                         $.cookie('mytoken', response['token'], { path: '/' });
                         window.location.replace("/")
                     } else {
-                        alert(response['msg']) // 아이이나 비밀번호가 일치하지 않습니다 
+                        alert(response['msg']) // msg: 아이디나 비밀번호가 일치하지 않습니다 
                     }
                 }
             });
@@ -79,41 +77,24 @@
     <div class="wrap">
 
         <div class="field">
-            <div class="control has-icons-left has-icons-right">
+            <div class="control">
                 <input class="input is-danger" id="userid" type="text" placeholder="이름을 입력하세요">
-                <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                </span>
-                <span class="icon is-small is-right">
-                    <i class="fas fa-check"></i>
-                </span>
             </div>
         </div>
 
         <div class="field">
-            <div class="control has-icons-left has-icons-right">
+            <div class="control">
                 <input class="input is-danger" id="pwd" type="password" placeholder="비밀번호를 입력하세요">
-                <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                </span>
-                <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
             </div>
         </div>
 
         <div class="field">
-            <div class="control has-icons-left has-icons-right">
-                <input class="input is-danger" type="password" placeholder="비밀번호 확인">
-                <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                </span>
-                <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
+            <div class="control">
+                <input class="input is-danger" id="pwd_chck" type="password" placeholder="비밀번호 확인">
             </div>
         </div>
 
+        <!-- 이 부분은 시간이 있으면 
         <div class="field">
             <div class="control">
                 <div class="select">
@@ -127,23 +108,17 @@
                     </select>
                 </div>
             </div>
-        </div>
-
+        </div> -->
+        
+        <!-- 이 부분은 시간이 있으면
         <div class="field">
-            <div class="control has-icons-left has-icons-right">
-                <input class="input is-danger" type="password" placeholder="질문에 대한 답변을 입력해주세요">
-                <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                </span>
-                <span class="icon is-small is-right">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </span>
+            <div class="control">
+                <input class="input is-danger" type="text" placeholder="질문에 대한 답변을 입력해주세요">
             </div>
-        </div>
+        </div> -->
 
         <div class="field is-grouped">
             <div class="control">
-                <!-- 회원가입 버튼을 누르면 로그인 페이지로 -->
                 <button class="button is-link" onclick="sign_up()">회원가입</button>
             </div>
         </div>
