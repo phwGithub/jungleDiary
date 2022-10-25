@@ -8,6 +8,8 @@
     <title>정글다이어리 | 회원가입 페이지</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+
 
     <style>
         .wrap {
@@ -46,7 +48,7 @@
                 $("#pwd_chck").focus()
                 return;
             }
-
+            
 
             $.ajax({
                 type: "POST",
@@ -57,10 +59,13 @@
                 },
                 success: function (response) {
                     if (response['result'] == 'success') {
-                        $.cookie('mytoken', response['token'], { path: '/' });
-                        window.location.replace("/")
-                    } else {
-                        alert(response['msg']) // msg: 아이디나 비밀번호가 일치하지 않습니다 
+                        let msg = response['msg']
+                        console.log(msg)
+                        window.location.reload();
+                    } 
+                    else {
+                        let msg = response['msg']
+                        alert(msg)
                     }
                 }
             });
@@ -73,6 +78,7 @@
 
 <body>
 
+    <h1 class="title">회원가입</h1>
 
     <div class="wrap">
 
@@ -109,7 +115,7 @@
                 </div>
             </div>
         </div> -->
-        
+
         <!-- 이 부분은 시간이 있으면
         <div class="field">
             <div class="control">

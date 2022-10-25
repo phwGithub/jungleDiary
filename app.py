@@ -1,29 +1,19 @@
 from flask import Flask, request, render_template, jsonify, make_response, redirect, url_for
 from pymongo import MongoClient 
-# 왜인지 hashlib 설치가 되지 않음 
-import hashlib
+import hashlib 
 import jwt
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-
-SECRET_KEY = 'KRAFTONJUNGLE' 
-
 client = MongoClient('localhost', 27017)  # 로컬연결
 db = client.db_jungle_local
 
+SECRET_KEY = 'KRAFTONJUNGLE' 
 
-# @app.route('/')
-# def home():
-#     token_receive = request.cookies.get('mytoken')
-#     try:
-#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+@app.route('/')
+def home():
+    return render_template('sign_in.html')
 
-#         return render_template('index.html')
-#     except jwt.ExpiredSignatureError:
-#         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
-#     except jwt.exceptions.DecodeError:
-#         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 # @app.route('/login')
 # def login():
@@ -35,29 +25,35 @@ db = client.db_jungle_local
 def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
-    result = db.jgDiary.insert_one({'name': new_name, 'password': new_pwd})
+    # todo/ db에 이미 있는지 확인하기 
+    # same_user = db.jgDiary.find({'name':new_name}, {'_id':0})
+    # if same_user:
+    #     return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
+    # else:
+    db.jgDiary.insert_one({'name': new_name, 'password': new_pwd})
+    return jsonify({'result': 'success', 'msg':'DB에 유저 등록 완료'})
 
 
-# @app.route('/signin', methods=['POST'])
-# def sign_in():
-#     username_receive = request.form['username_give']
-#     password_receive = request.form['password_give']
 
+@app.route('/signin', methods=['POST'])
+def sign_in():
+    username_receive = request.form['input_name']
+    password_receive = request.form['input_pwd']
 
-#     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-#     result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    result = db.jgDiary.find_one({'name': username_receive, 'password': pw_hash})
 
-#     if result is not None:  #result 찾음
-#         payload = {
-#             'id': username_receive,
-#             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
-#         }
-#         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
+    if result is not None:  #result 찾음
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
 
-#         return jsonify({'result': 'success', 'token': token})
-#     # result 못찾음
-#     else:
-#         return jsonify({'result': 'fail', 'msg': '가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.'})
+        return jsonify({'result': 'success', 'token': token})
+    
+    else:   # result 못찾음
+        return jsonify({'result': 'fail', 'msg': '가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.'})
 
 
 if __name__ == '__main__':  
