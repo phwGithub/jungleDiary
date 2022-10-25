@@ -20,6 +20,10 @@ def login():
     msg = request.args.get("msg")
     return render_template('로그인성공.html', msg=msg)
 
+@app.route('/sign_up')
+def render_sign_up():
+    return render_template('sign_up.html')
+
 
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
@@ -31,13 +35,13 @@ def sign_up():
         "password": password_hash,
     }
     
-    # todo/ db에 이미 있는지 확인하기 
-    # same_user = db.jgDiary.find({'name':new_name}, {'_id':0})
-    # if same_user:
-    #     return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
-    # else:
-    db.jgDiary.insert_one(doc)
-    return jsonify({'result': 'success', 'msg':'DB에 유저 등록 완료'})
+    # db에 이름이 이미 있는지 확인하기 
+    result = db.jgDiary.find_one({'name':new_name}, {'_id':0})
+    if result is not None:
+        db.jgDiary.insert_one(doc)
+        return jsonify({'result': 'success', 'msg':'DB에 유저 등록 완료'})
+    else:
+        return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
 
 

@@ -49,7 +49,7 @@
                         $.cookie('mytoken', response['token'], { path: '/' });
                         let msg = response['msg'] 
                         console.log(msg)
-                        window.location.replace("/login")
+                        window.location.replace("/login") // 로그인 api로 가기 
                     } else {
                         alert(response['msg']) // 로그인 실패 메시지
                     }
@@ -78,6 +78,7 @@
         </div>
 
         <button class="button is-link" onclick="sign_in()">로그인</button>
+        <button class="button is-danger" onclick="location.href='sign_up'">가입하기</button>
 
     </div>
 
