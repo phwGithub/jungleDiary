@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>정글다이어리 | 로그인</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-
     <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>  
     <style>
         .wrap {
             width: 500px;
@@ -39,7 +39,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/signin",
+                url: "/sign_in",
                 data: {
                     input_name: username,
                     input_pwd: password
@@ -47,9 +47,11 @@
                 success: function (response) {
                     if (response['result'] == 'success') {
                         $.cookie('mytoken', response['token'], { path: '/' });
-                        window.location.replace("/")
+                        let msg = response['msg'] 
+                        console.log(msg)
+                        window.location.replace("/login")
                     } else {
-                        alert(response['msg']) // 아이이나 비밀번호가 일치하지 않습니다 
+                        alert(response['msg']) // 로그인 실패 메시지
                     }
                 }
             });

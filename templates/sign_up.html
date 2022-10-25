@@ -43,7 +43,7 @@
                 return;
             }
 
-            if (password != password_chck) {
+            if (password_chck != password) {
                 alert('비밀번호가 일치하지 않습니다')
                 $("#pwd_chck").focus()
                 return;
@@ -52,7 +52,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/signup",
+                url: "/sign_up",
                 data: {
                     new_name_give: username,
                     new_pwd_give: password
@@ -61,7 +61,7 @@
                     if (response['result'] == 'success') {
                         let msg = response['msg']
                         console.log(msg)
-                        window.location.reload();
+                        window.location.replace("/login");
                     } 
                     else {
                         let msg = response['msg']
@@ -78,10 +78,10 @@
 
 <body>
 
-    <h1 class="title">회원가입</h1>
-
+    
     <div class="wrap">
-
+        
+        <h1 class="title">회원가입</h1>
         <div class="field">
             <div class="control">
                 <input class="input is-danger" id="userid" type="text" placeholder="이름을 입력하세요">
