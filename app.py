@@ -25,7 +25,7 @@ def login():
 def render_sign_up():
     return render_template('sign_up.html')
 
-
+# 가입하기 
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     new_name = request.form['new_name_give']
@@ -37,13 +37,12 @@ def sign_up():
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
         doc = {
             "name": new_name,
-            "password": password_hash,
+            "pwd": password_hash,
         }
         db.user.insert_one(doc)
         return jsonify({'result': 'success', 'msg':'DB에 유저 등록 완료'})
     elif result is not None:
         return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
-
 
 
 @app.route('/sign_in', methods=['POST'])
@@ -52,7 +51,7 @@ def sign_in():
     password_receive = request.form['input_pwd']
 
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    result = db.user.find_one({'name': username_receive, 'password':password_hash})
+    result = db.user.find_one({'name': username_receive, 'pwd':password_hash})
     # 아이디와 유저가 입력한 해쉬화된 pw가 DB에 저장되어 있는 해쉬화된 pw와 일치하는지 확인 
 
     if result is not None:  #result 찾음
