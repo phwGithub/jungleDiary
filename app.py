@@ -1,4 +1,5 @@
 import time
+import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.json_util import dumps
@@ -17,7 +18,9 @@ def home():
 ### HTML 화면 보여주기
 @app.route('/mainpage')
 def mainpage():
-    return render_template('main.html',title="오늘의 메모")
+    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    now_date = date.split(' ')
+    return render_template('main.html',title="오늘의 메모",date=now_date)
 
 ### 메모 작성
 @app.route('/api/appendMemo', methods=['post'])

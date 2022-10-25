@@ -1,12 +1,73 @@
 {% extends '/common/common.html' %}
 {% block title %}{{title}}{% endblock %}
 
+{% block cdns %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-{% block css %}
+        <!-- Bootstrap bulma -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+		<!-- JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+{% endblock %}
+
+
+{% block style %}
 <style type="text/css">
     .mainbox {
-        width : 50%;
+        width : 70%;
         margin: auto;
+        margin-top:20px;
+    }
+    .title {
+        display: block;
+        font-size: 30px;
+        margin: auto;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .date{
+        display: block;
+        font-size:20px;
+        text-align: center;
+        margin-bottom:30px;
+    }
+    .memo_input{
+        width:80%;
+        margin-right: 3%;
+    }
+    .memo_botton{
+        width:15%;
+    }
+    .memo_input_box{
+        width:70%;
+        margin:auto;
+        padding-bottom:10px;
+    }
+    .memo_content {
+        height:45px;
+        padding:2.5px;
+        padding-left:20px;
+    }
+    .memos {
+        width:70%;
+        margin:auto;
+        padding-top:10px;
+    }
+    .edit_delete_botton{
+        height:40px;
+        margin-right:10px;
+        float:right;
+    }
+    .memo_text{
+        display:inline;
+        font-size:20px;
+        width:60%;
     }
 </style>
 {% endblock %}
@@ -14,8 +75,28 @@
 
 {% block body %}
 <div>
-    <div class = 'box mainbox'>
-        박스요
+    <div class = 'mainbox box'>
+        <div class = 'field'>
+            <div>
+                <h1 class="title">오늘의 메모</h1>
+            </div>
+            <div>
+                <p class = 'date'>20{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
+            </div>
+            <div class="memo_input_box">
+                <input class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
+                <button class="button is-info is-light memo_botton">메모하기!</button>
+            </div>
+            <div class="memos" id="memos">
+                <div class = 'box memo_content'>
+                    <p class="memo_text">백준을 풀었다</p>
+                    <button class="button is-warning is-light edit_delete_botton">수정</button>
+                    <button class="button is-danger is-light edit_delete_botton">삭제</button>
+                </div>
+                <div class = 'box memo_content'>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
