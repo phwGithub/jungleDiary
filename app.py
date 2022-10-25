@@ -64,6 +64,7 @@ def appendDiary():
     new_diary_time = int(time.strftime('%y%m%d%H%M%S', time.localtime(time.time())))
     db.diary.insert_one({'user':new_diary_user,'title':new_diary_title,'content':new_diary_content,'fixed_date':new_diary_date, 'update_time':new_diary_time})
     return jsonify({'result': 'success'})
+
 ## 일기 불러오기
 @app.route('/api/getDiary', methods=['get'])
 def getDiary():
