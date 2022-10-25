@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="kr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정글다이어리 | 로그인</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+    <style>
+        .wrap {
+            width: 500px;
+            margin-top: 100px;
+            margin: auto;
+        }
+
+        .field {
+            width: inherit;
+        }
+    </style>
+    <script>
+        function sign_in() {
+            let username = $("#input-username").val()
+            let password = $("#input-password").val()
+
+            if (username == "") {
+                alert('아이디를 입력하세요!')
+                $("#input-username").focus()
+                return;
+            }
+
+            if (password == "") {
+                alert('비밀번호를 입력하세요!')
+                $("#input-password").focus()
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/signin",
+                data: {
+                    input_name: username,
+                    input_pwd: password
+                },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        $.cookie('mytoken', response['token'], { path: '/' });
+                        window.location.replace("/")
+                    } else {
+                        alert(response['msg']) // 아이이나 비밀번호가 일치하지 않습니다 
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <div class="wrap">
+
+        <h1 class="title">로그인</h1>
+        <div class="field">
+            <div class="control">
+                <input id="input-username" class="input is-danger" type="text" placeholder="아이디(이름)을 입력하세요">
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <input id="input-password" class="input is-danger" type="password" placeholder="비밀번호를 입력하세요">
+            </div>
+        </div>
+
+        <button class="button is-link" onclick="sign_in()">로그인</button>
+
+    </div>
+
+</body>
+
+</html>
