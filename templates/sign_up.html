@@ -61,6 +61,8 @@
                     if (response['result'] == 'success') {
                         let msg = response['msg']
                         console.log(msg)
+                        alert("가입 성공!")
+                        // 회원가입 후 연결 될 페이지 todo
                         window.location.replace("/login");
                     } 
                     else {

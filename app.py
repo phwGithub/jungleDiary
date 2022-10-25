@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 client = MongoClient('localhost', 27017)  # 로컬연결
-db = client.db_jungle_local
+db = client.jgDiary
 
 SECRET_KEY = 'KRAFTONJUNGLE' 
 
@@ -14,13 +14,14 @@ SECRET_KEY = 'KRAFTONJUNGLE'
 def home():
     return render_template('sign_in.html')
 
-
+# 로그인 성공
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
     return render_template('로그인성공.html', msg=msg)
 
-@app.route('/sign_up')
+# 
+@app.route('/sign_up', methods=['GET'])
 def render_sign_up():
     return render_template('sign_up.html')
 
@@ -29,18 +30,18 @@ def render_sign_up():
 def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
-    password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
-    doc = {
-        "name": new_name,
-        "password": password_hash,
-    }
-    
+    result = db.user.find_one({'name':new_name})
+
     # db에 이름이 이미 있는지 확인하기 
-    result = db.jgDiary.find_one({'name':new_name}, {'_id':0})
-    if result is not None:
-        db.jgDiary.insert_one(doc)
+    if result is None:
+        password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
+        doc = {
+            "name": new_name,
+            "password": password_hash,
+        }
+        db.user.insert_one(doc)
         return jsonify({'result': 'success', 'msg':'DB에 유저 등록 완료'})
-    else:
+    elif result is not None:
         return jsonify({'result': 'fail', 'msg':'동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
 
@@ -51,7 +52,7 @@ def sign_in():
     password_receive = request.form['input_pwd']
 
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    result = db.jgDiary.find_one({'name': username_receive, 'password':password_hash})
+    result = db.user.find_one({'name': username_receive, 'password':password_hash})
     # 아이디와 유저가 입력한 해쉬화된 pw가 DB에 저장되어 있는 해쉬화된 pw와 일치하는지 확인 
 
     if result is not None:  #result 찾음
