@@ -127,7 +127,7 @@ def appendMemos():
     else:
         appending_user = validate_token(token)['id']
         new_memo = request.form['new_memo']
-        new_memo_date = int(time.strftime('%Y%m%d', time.localtime(time.time())))
+        new_memo_date = request.form['date']
         new_memo_time = int(time.strftime('%H%M%S', time.localtime(time.time())))
         db.memos.insert_one({'user': appending_user, 'content': new_memo,'date': new_memo_date, 'time': new_memo_time})
         return jsonify({'result': 'success'})
@@ -141,10 +141,12 @@ def getMemos():
     elif validate_token(token) =='유효하지않은토큰':
         return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     else:
-        memo_date = int(time.strftime('%Y%m%d', time.localtime(time.time())))
+        memo_date = request.args.get('date')
+        print(memo_date)
         memo_user = validate_token(token)['id']
         memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', -1)
         user_memos = dumps(memos)
+        print(user_memos)
         return jsonify({'result': 'success', 'user_memos': user_memos})
 
 
