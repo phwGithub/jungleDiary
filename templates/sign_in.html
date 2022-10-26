@@ -61,7 +61,7 @@
                 if (response['result'] == 'success') {
                     $.cookie('mytoken', response['token'], { path: '/' });
                     let msg = response['msg']
-                    swal("환영합니다!",msg,"error")
+                    swal("환영합니다!",msg,"success")
                     window.location.replace("/mainpage")
                 } else {
                     swal("오류",response['msg'],"error")
