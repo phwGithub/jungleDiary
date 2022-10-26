@@ -296,7 +296,6 @@
     function editMemoInput(memo_id, memo_content,memo_num) {
         append_date = month+1<10 ? String(year)+'0'+String(month+1)+String(date):String(year)+String(month+1)+String(date);
         $("#memos").html("");
-        $("#new_memo").val("")
         $.ajax({
             type: "get",
             url: "/api/getMemos",
@@ -349,7 +348,7 @@
     function diary_wrtie_form() {
         $(".diary_input_box").show();
         $(".memo_only").hide();
-        $('.new_memo').val('')
+        $('#new_memo').val('')
     }
 
     function memo_wrtie_form() {
