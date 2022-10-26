@@ -5,8 +5,42 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <title>{% block title %}{% endblock %}</title>
   {% block cdns %}{% endblock %}
+
+  <!-- todo /// 로그아웃 기능 구현하기  -->
+  <script>
+
+    // todo/// 로그인한 상태이면 사용자 이름 + 로그아웃 창만 띄우기
+    // $(document).ready(function () {
+
+
+    // });
+
+    // 로그아웃
+    function signOut() {
+      $.removeCookie('mytoken', { path: '/' });
+      alert("로그아웃 성공")
+      $('#user-info').empty()
+      
+      let temp_html =
+        `
+      <div class="buttons">
+            <a class="button is-primary" a href='/sign_up'>
+              <strong>회원가입</strong>
+            </a>
+            <a class="button is-light" a href='/sign_in'> 로그인 </a>
+          </div>
+      `
+      $('#user-info').append(temp_html)
+      window.location.href = '/';
+    }
+
+  </script>
+
 </head>
 
 <body>
@@ -35,14 +69,17 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
+
+          <div class="buttons" id="userinfo">
             <a class="button is-primary" a href='/sign_up'>
               <strong>회원가입</strong>
             </a>
             <a class="button is-light" a href='/sign_in'> 로그인 </a>
+
             <!-- todo //// 로그아웃 기능 추가 -->
-            <button class="button is-light" onclick='sign_out()'> 로그아웃 </button>
+            <!-- <button class="button is-light" onclick='signOut()'> 로그아웃 </button> -->
           </div>
+
         </div>
       </div>
     </div>
