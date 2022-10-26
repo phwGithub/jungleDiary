@@ -396,6 +396,7 @@
                     if (response["result"] === "success") {
                         $('#diary_title').val('');
                         $('#diary_content').val('');
+                        swal("일기가 저장되었습니다!",'나의 일기에서 확인해보세요!',"success")
                     }
                     else if(response.result =='fail'){
                         swal("오류", response['msg'], "error");
