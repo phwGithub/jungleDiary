@@ -11,16 +11,16 @@
         margin: 100px auto;
     }
 
-    .field {
+    .field.loginpage {
         width: inherit;
     }
 
-    .button {
+    .button.loginpage {
         width: 300px;
         margin: auto;
     }
 
-    .title {
+    .title.loginpage {
         text-align: center;
     }
 </style>
@@ -42,7 +42,7 @@
             $("#input-password").focus()
             return;
         }
-
+        console.log('gi')
         $.ajax({
             type: "POST",
             url: "/sign_in",
@@ -70,26 +70,28 @@
 {% block body %}
 <div class="wrap">
 
-    <h1 class="title">로그인</h1>
-    <div class="field">
+    <h1 class="title loginpage">로그인</h1>
+    <div class="field loginpage">
         <div class="control">
             <input id="input-username" class="input is-danger" type="text" placeholder="아이디(이름)을 입력하세요">
         </div>
     </div>
 
-    <div class="field">
+    <div class="field loginpage">
         <div class="control">
             <input id="input-password" class="input is-danger" type="password" placeholder="비밀번호를 입력하세요">
         </div>
     </div>
-    <div class="field">
+    <div class="field loginpage">
         <div class="control">
-            <button class="button is-link" onclick="sign_in()">로그인</button>
+            <button class="button loginpage is-link" onclick="sign_in()">로그인</button>
         </div>
     </div>
-    <div class="field">
+    <div class="field loginpage">
         <div class="control">
-            <div class="title"><a href='/sign_up'>회원가입하기</a></div>
+            <div class="button loginpage">
+                <a href='/sign_up'>회원가입하기</a>
+            </div>
         </div>
     </div>
 </div>

@@ -10,16 +10,16 @@
         margin: 100px auto;
     }
 
-    .field {
+    .field.signup {
         width: inherit;
     }
 
-    .button {
+    .button.signup {
         width: 300px;
         margin: auto;
     }
 
-    .title {
+    .title.signup {
         text-align: center;
     }
 </style>
@@ -51,6 +51,7 @@
             return;
         }
 
+        console.log('gi')
 
         $.ajax({
             type: "POST",
@@ -83,14 +84,14 @@
 
 <div class="wrap">
 
-    <h1 class="title">회원가입</h1>
-    <div class="field">
+    <h1 class="title signup">회원가입</h1>
+    <div class="field signup">
         <div class="control">
             <input class="input is-danger" id="userid" type="text" placeholder="아이디(본명)를 입력하세요">
         </div>
     </div>
 
-    <div class="field">
+    <div class="field signup">
         <div class="control">
             <input class="input is-danger" id="pwd" type="password" placeholder="비밀번호를 입력하세요">
         </div>
@@ -127,7 +128,7 @@
 
     <div class="field is-grouped">
         <div class="control">
-            <button class="button is-success" onclick="sign_up()">가입하기</button>
+            <button class="button signup is-success" onclick="sign_up()">가입하기</button>
         </div>
     </div>
 </div>
