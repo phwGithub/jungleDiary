@@ -110,7 +110,7 @@
                     <h1 class="title">오늘의 메모</h1>
                 </div>
                 <div>
-                    <p class = 'date'>{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
+                    <p class = 'date'><strong>{{date[0]}}일 {{date[1]}}월 {{date[2]}}일</strong></p>
                 </div>
                 <div class="memo_input_box">
                     <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
@@ -284,6 +284,7 @@
     function diary_wrtie_form() {
         $(".diary_input_box").show();
         $(".memo_only").hide();
+        $('.new_memo').val('')
     }
 
     function memo_wrtie_form() {
@@ -291,27 +292,32 @@
         $(".memo_only").show();
     }
     function appendDiary(date) {
-        memo_wrtie_form();
         let new_diary_title = $('#diary_title').val();
         let new_diary_content = $('#diary_content').val();
-        $.ajax({
-            type: "POST",
-            url: "/api/appendDiary",
-            data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':date},
-            success: function (response) {
-                if (response["result"] === "success") {
-                    getMemos();
+        if (new_diary_title && new_diary_content){
+            memo_wrtie_form();
+            $.ajax({
+                type: "POST",
+                url: "/api/appendDiary",
+                data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':date},
+                success: function (response) {
+                    if (response["result"] === "success") {
+                        $('#diary_title').val('');
+                        $('#diary_content').val('');
+                    }
+                    else if(response.result =='fail'){
+                        alert(response['msg']);
+                        window.location.replace("/sign_in");
+                    }
+                    else {
+                        alert("서버 오류!");
+                    }
                 }
-                else if(response.result =='fail'){
-                    alert(response['msg']);
-                    window.location.replace("/sign_in");
-                }
-                else {
-                    alert("서버 오류!");
-                }
-            }
-        })
-
+            })
+        }
+        else {
+            alert('제목과 내용을 모두 입력해주세요')
+        }
     }
 </script>
 {% endblock %}

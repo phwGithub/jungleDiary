@@ -132,7 +132,7 @@ def appendMemos():
         db.memos.insert_one({'user': appending_user, 'content': new_memo,'date': new_memo_date, 'time': new_memo_time})
         return jsonify({'result': 'success'})
 
-# 메모 불러오기
+# 메모 불러오기(완)
 @app.route('/api/getMemos', methods=['get'])
 def getMemos():
     token = request.cookies.get('mytoken')
@@ -148,7 +148,7 @@ def getMemos():
         return jsonify({'result': 'success', 'user_memos': user_memos})
 
 
-# 메모 삭제
+# 메모 삭제(완)
 @app.route('/api/deleteMemo', methods=['post'])
 def deleteMemo():
     token = request.cookies.get('mytoken')
@@ -161,7 +161,7 @@ def deleteMemo():
         db.memos.delete_one({'_id': ObjectId(delete_memo_id)})
         return jsonify({'result': 'success'})
 
-# 메모 수정
+# 메모 수정(완)
 @app.route('/api/updateMemo', methods=['post'])
 def updateMemo():
     token = request.cookies.get('mytoken')
@@ -175,7 +175,7 @@ def updateMemo():
         db.memos.update_one({'_id': ObjectId(update_memo_id)},{'$set': {'content': update_memo}})
         return jsonify({'result': 'success'})
 
-# 일기 작성
+# 일기 작성(완) 아래 주석에 사용법
 @app.route('/api/appendDiary', methods=['post'])
 def appendDiary():
     token = request.cookies.get('mytoken')
@@ -206,6 +206,37 @@ def getDiary():
         get_diary_user = validate_token(token)['id']
         get_diary_date = request.args.get('get_diary_date')
         diary = db.diary.find({'user': get_diary_user, 'fixed_date': get_diary_date}).sort('update_time', 1)
+        get_diary_list = dumps(diary)
+    return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
+
+# 내 일기 불러오기
+@app.route('/api/getDiary', methods=['get'])
+def getDiary():
+    ## api로 서버로 요청받았을때 토큰 검증 양식
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        get_diary_user = validate_token(token)['id']
+        get_diary_date = request.args.get('get_diary_date')
+        diary = db.diary.find({'writer': get_diary_user, 'fixed_date': get_diary_date}) #.sort('fixed_time', 1)
+        get_diary_list = dumps(diary)
+    return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
+
+# 날짜별 모두의 일기 불러오기
+@app.route('/api/getDiary', methods=['get'])
+def getDiary():
+    ## api로 서버로 요청받았을때 토큰 검증 양식
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        get_diary_date = request.args.get('get_diary_date')
+        diary = db.diary.find({'fixed_date': get_diary_date}).sort('likes', -1)
         get_diary_list = dumps(diary)
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
 
