@@ -370,7 +370,7 @@ $(document).on('click', '.date-picker', function() {
                         showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                         
                     });
-                    $("#" + myId).css("color","#00d67a");
+                    $("." + myId).css("color","#00d67a");
                 }else if(response.result =='fail'){
                         swal("토큰 오류", response['msg'], "error");
                         window.location.replace("/sign_in");
@@ -395,7 +395,7 @@ $(document).on('click', '.date-picker', function() {
                     diaryList.forEach(element => {
                         showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                     });
-                    $("#" + myId).css("color","#00d67a");
+                    $("." + myId).css("color","#00d67a");
                 }else if(response.result =='fail'){
                     swal("오류", response['msg'], "error").then(function() {
                         window.location.replace("/sign_in");
@@ -677,7 +677,7 @@ function showMyDiary(diary_writer, diary_title, diary_likes, diary_content, diar
         <div class="card mb-4 modalDiary" id="${diary_id}">
             <div class="card-content">
                 <div class="content">
-                    <p id="${diary_writer}">작성자 : ${diary_writer}</p>
+                    <p class="${diary_writer}" id="writer">작성자 : ${diary_writer}</p>
                     <p>
                         <span id="title">제목 : ${diary_title}</span>&nbsp&nbsp&nbsp&nbsp
                         <span class="icon-text">
