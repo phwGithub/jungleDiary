@@ -72,6 +72,9 @@
         font-size:20px;
         width:60%;
     }
+    .memo_eidt{
+        width:80%;
+    }
 </style>
 {% endblock %}
 
@@ -100,23 +103,23 @@
 
 {% block script %}
 <script>
-    let date_now = '{{date[0]}}-{{date[1]}}-{{date[2]}}'
+    let date_now = '{{date[0]}}{{date[1]}}{{date[2]}}'
         $(document).ready(function () {
         getMemos();
     })
     function getMemos() {
         $("#memos").html("");
         $.ajax({
-            type: "post",
+            type: "get",
             url: "/api/getMemos",
-            data: {'memo_date':date_now},
+            data: {},
             success: function (response) {
                 if (response.result === "success") {
                     ///다른 액션 시에 input박스들 비우기
                     $("#new_memo").val("")
                     let memos_dumps = response['user_memos'];
                     let user_memos = JSON.parse(memos_dumps);
-                    for (let i = 0; i<memos.length; i++) {
+                    for (let i = 0; i<user_memos.length; i++) {
                         show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
                     }
                 }
@@ -127,23 +130,17 @@
         })
     }
     function show_memos(memo_num ,memo_content, memo_id) {
-        /// link-like, 삭제는 함수&api를 만들어서 해당 버튼 누를때 id를 서버로 보내며 post한다
-        /// card_num은 통해 수정버튼을 누를 시에 수정되는 카드의 id를 특정하기 위해 만든 변수로
-        /// 패이지가 load 될때 card가 추가되면서 0부터 1씩 커지며 부여된다.
-        /// 수정버튼을 누를 때 기존의 제목과 내용, card_num, 메모의db_id를 변수로 입력한다
         let memo_html = `<div id ='memo${memo_num}'class = 'box memo_content'>
-    <p class="memo_text">${memo_text}</p>
-    <button onclick='editMemo(${memo_id})' class="button is-warning is-light edit_delete_botton">수정</button>
-    <button onclick='deleteMemo(${memo_id})' class="button is-danger is-light edit_delete_botton">삭제</button>
+    <p class="memo_text">${memo_content}</p>
+    <button onclick='deleteMemo("${memo_id}")' class="button is-danger is-light edit_delete_botton">삭제</button>
+    <button onclick='editMemoInput("${memo_id}","${memo_content}",${memo_num})' class="button is-warning is-light edit_delete_botton">수정</button>
 </div>`
-        $("#card-list").append(card_html)
+        $("#memos").append(memo_html)
     }
 
 
 
     function appendMemo() {
-        /// memo_title과 memo_content가 모두 입력되었는지 확인한다.
-        /// memo_title, memo_content를 서버에 보내며 post, 성공 시 새로고침
         let new_memo = $("#new_memo").val();
         if (new_memo){
             $.ajax({
@@ -165,6 +162,29 @@
         }
     }
 
+    function deleteMemo(delete_memo_id) {
+        $.ajax({
+            type: "POST",
+            url: "/api/deleteMemo",
+            data: {'delete_memo_id':delete_memo_id},
+            success: function (response) {
+                if (response["result"] === "success") {
+                    getMemos();
+                }
+                else {
+                    alert("서버 오류!");
+                }
+            }
+        })
+    }
+    function editMemoInput(memo_id, memo_content,memo_num) {
+        /// onclick -> card_num을 이용하여 해당 박스를 특정하고 html을 수정한다
+        let edit_html = `<input id='memo_input${memo_num}' class="memo_text is-focused memo_eidt"></input>
+                    <button onclick='editMemo(${memo_id})' class="button is-link is-light edit_delete_botton">완료</button>`
+        $('#memo'+memo_num).html("");
+        $('#memo'+memo_num).append(edit_html);
+        $('#memo_input'+memo_num).val(memo_content)
+    }
 
 </script>
 {% endblock %}

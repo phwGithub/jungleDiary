@@ -25,11 +25,14 @@ def validate_token(token):
         return '유효하지않은토큰'
     else:
         return decoded
-# if validate_token(token) == '토큰만료':
-#     return render_template('sign_in.html', msg='토큰만료')
-# elif validate_token(token) =='유효하지않은토큰':
-#     return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
-# else:
+
+    ### api로 서버로 요청받았을때 토큰 검증 양식
+    # token = request.cookies.get('mytoken')
+    # if validate_token(token) == '토큰만료':
+    #     return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    # elif validate_token(token) =='유효하지않은토큰':
+    #     return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    # else:
 
 @app.route('/')
 def home():
@@ -106,44 +109,64 @@ def showEveryDiary():
     now_date = date.split(' ')
     return render_template('monthlyDiary.html', title="모두의 일기", date=now_date)
 
-# 메모 작성
+# 메모 작성 (완)
 @app.route('/api/appendMemo', methods=['post'])
 def appendMemos():
-    appending_user = request.cookies.get('mytoken')
-    new_memo = request.form['new_memo']
-    print(appending_user)
-    validate_token(appending_user)
-    new_memo_date = request.form['new_memo_date']
-    new_memo_time = int(time.strftime('%H%M%S', time.localtime(time.time())))
-    db.memos.insert_one({'user': appending_user, 'content': new_memo,
-                        'date': new_memo_date, 'time': new_memo_time})
-    return jsonify({'result': 'success'})
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        appending_user = validate_token(token)['id']
+        new_memo = request.form['new_memo']
+        new_memo_date = int(time.strftime('%y%m%d', time.localtime(time.time())))
+        new_memo_time = int(time.strftime('%H%M%S', time.localtime(time.time())))
+        db.memos.insert_one({'user': appending_user, 'content': new_memo,'date': new_memo_date, 'time': new_memo_time})
+        return jsonify({'result': 'success'})
 
 # 메모 불러오기
-@app.route('/api/getMemos', methods=['post'])
+@app.route('/api/getMemos', methods=['get'])
 def getMemos():
-    memo_date = request.form['memo_date']
-    memo_user = request.cookies.get('id')
-    memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', 1)
-    user_memos = dumps(memos)
-    return jsonify({'result': 'success', 'user_memos': user_memos})
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg='토큰만료')
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+    else:
+        memo_date = int(time.strftime('%y%m%d', time.localtime(time.time())))
+        memo_user = validate_token(token)['id']
+        memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', 1)
+        user_memos = dumps(memos)
+        return jsonify({'result': 'success', 'user_memos': user_memos})
 
 
 # 메모 삭제
 @app.route('/api/deleteMemo', methods=['post'])
 def deleteMemo():
-    delete_memo_id = request.form['delete_memo_id']
-    db.memos.delete_one({'_id': ObjectId(delete_memo_id)})
-    return jsonify({'result': 'success'})
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg='토큰만료')
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+    else:
+        delete_memo_id = request.form['delete_memo_id']
+        db.memos.delete_one({'_id': ObjectId(delete_memo_id)})
+        return jsonify({'result': 'success'})
 
 # 메모 수정
 @app.route('/api/updateMemo', methods=['post'])
 def updateMemo():
-    update_memo_id = request.form['update_memo_id']
-    update_memo = request.form['update_memo']
-    db.memos.update_one({'_id': ObjectId(update_memo_id)},
-                        {'$set': {'content': update_memo}})
-    return jsonify({'result': 'success'})
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg='토큰만료')
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+    else:
+        update_memo_id = request.form['update_memo_id']
+        update_memo = request.form['update_memo']
+        db.memos.update_one({'_id': ObjectId(update_memo_id)},{'$set': {'content': update_memo}})
+        return jsonify({'result': 'success'})
 
 # 일기 작성
 @app.route('/api/appendDiary', methods=['post'])
@@ -152,8 +175,7 @@ def appendDiary():
     new_diary_title = request.form['new_diary_title']
     new_diary_content = request.form['new_diary_content']
     new_diary_date = request.form['new_diary_date']
-    new_diary_time = int(time.strftime(
-        '%y%m%d%H%M%S', time.localtime(time.time())))
+    new_diary_time = int(time.strftime('%y%m%d%H%M%S', time.localtime(time.time())))
     db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,
                         'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
     return jsonify({'result': 'success'})
