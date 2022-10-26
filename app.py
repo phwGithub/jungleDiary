@@ -36,7 +36,12 @@ def validate_token(token):
 
 @app.route('/')
 def home():
-    return render_template("monthlyDiary.html", title="정글 다이어리")
+    ### api로 서버로 요청받았을때 토큰 검증 양식
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료' or '유효하지않은토큰':
+        return render_template("sign_in.html", title="정글 다이어리")
+    else:
+        return render_template("monthlyDiary.html", title="정글 다이어리")
 
 
 # 회원가입 페이지로 이동

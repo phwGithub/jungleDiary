@@ -54,7 +54,7 @@
                 if (response['result'] == 'success') {
                     $.cookie('mytoken', response['token'], { path: '/' });
                     let msg = response['msg']
-                    console.log(msg)
+                    alert(msg)
                     window.location.replace("/mainpage")
                 } else {
                     alert(response['msg'])
