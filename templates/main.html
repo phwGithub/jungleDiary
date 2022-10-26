@@ -254,6 +254,7 @@
 
 
     function deleteMemo(delete_memo_id) {
+        $("#new_memo").val("")
         $.ajax({
             type: "POST",
             url: "/api/deleteMemo",
@@ -295,6 +296,7 @@
     function editMemoInput(memo_id, memo_content,memo_num) {
         append_date = month+1<10 ? String(year)+'0'+String(month+1)+String(date):String(year)+String(month+1)+String(date);
         $("#memos").html("");
+        $("#new_memo").val("")
         $.ajax({
             type: "get",
             url: "/api/getMemos",
