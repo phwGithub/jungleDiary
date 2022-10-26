@@ -57,8 +57,7 @@ def sign_in():
     username_receive = request.form['input_name']
     password_receive = request.form['input_pwd']
 
-    password_hash = hashlib.sha256(
-        password_receive.encode('utf-8')).hexdigest()
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     result = db.user.find_one({'name': username_receive, 'pwd': password_hash})
 
     # 아이디와 유저가 입력한 해쉬화된 pw가 DB에 저장되어 있는 해쉬화된 pw와 일치하는지 확인
