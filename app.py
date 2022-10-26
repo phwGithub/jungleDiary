@@ -189,7 +189,7 @@ def appendDiary():
         new_diary_content = request.form['new_diary_content']
         new_diary_date = request.form['new_diary_date']
         new_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
-        db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
+        db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time, 'likes' : 0})
         return jsonify({'result': 'success'})
 
 
@@ -205,7 +205,7 @@ def getDiary():
     else:
         get_diary_user = validate_token(token)['id']
         get_diary_date = request.args.get('get_diary_date')
-        diary = db.diary.find({'writer': get_diary_user, 'fixed_date': get_diary_date}).sort('fixed_date', 1)
+        diary = db.diary.find({'user': get_diary_user, 'fixed_date': get_diary_date}).sort('update_time', 1)
         get_diary_list = dumps(diary)
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
 # function appendDiary(date) {

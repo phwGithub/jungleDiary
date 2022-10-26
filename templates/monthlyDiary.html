@@ -346,7 +346,7 @@ $(document).on('click', '.date-picker', function() {
                 console.log(diaryList);
                 $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
                 diaryList.forEach(element => {
-                    showMyDiary(element.writer, element.title, element.likes, element.content,element['_id']['$oid']);
+                    showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                 });
                 
             }
