@@ -27,6 +27,13 @@
 {% endblock %}
 {% block script %}
 <script>
+    $(document).ready(function () {
+        let msg = "{{msg}}"
+        if(msg) {
+            alert(msg);
+        }
+    });
+    
     function sign_in() {
         let username = $("#input-username").val()
         let password = $("#input-password").val()
