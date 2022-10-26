@@ -237,7 +237,7 @@ for (dhead in days) {
 }
 $dataHead += "</tr>";
 
-//alert($dataHead);
+
 document.getElementById("thead-month").innerHTML = $dataHead;
 
 
@@ -356,10 +356,10 @@ $(document).on('click', '.date-picker', function() {
                         showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                     });
                 }else if(response.result =='fail'){
-                        alert(response['msg']);
+                        swal("토큰 오류", response['msg'], "error");
                         window.location.replace("/sign_in");
                 } else {
-                    alert("서버 오류!");
+                    swal("토큰 오류", "서버 오류!", "error");
                 }
             }
         });
@@ -377,10 +377,11 @@ $(document).on('click', '.date-picker', function() {
                         showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                     });
                 }else if(response.result =='fail'){
-                        alert(response['msg']);
+                    swal("오류", response['msg'], "error").then(function() {
                         window.location.replace("/sign_in");
+                    });
                 } else {
-                    alert("서버 오류!");
+                    swal("오류", "서버 오류!", "error");
                 }
             }
         });
@@ -434,19 +435,19 @@ $(document).on('click','#modalDiaryAdd', function() {
         data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':new_diary_date},
         success: function (response) {
             if (response["result"] === "success") {
-                alert("일기가 추가되었습니다.");
-                if(title == "나의 일기") {
-                    window.location.replace("/showMyDiary");
-                } else {
-                    window.location.replace("/showEveryDiary");
-                }
-            }
-            else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
-            }
-            else {
-                alert("서버 오류!");
+                swal("성공", "일기가 추가되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
+            } else if(response.result =='fail'){
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
+            } else {
+                swal("오류", "서버 오류!", "error");
             }
         }
     })
@@ -464,17 +465,19 @@ $(document).on('click','#modalModifyConfirm', function() {
         data: {"update_diary_id" : diaryId, "update_diary_title" : diaryTitle, "update_diary_content" : diaryContent},
         success: function(response) {
             if(response["result"] == "success") {
-                alert("수정이 완료되었습니다.");
-                if(title == "나의 일기") {
-                    window.location.replace("/showMyDiary");
-                } else {
-                    window.location.replace("/showEveryDiary");
-                }
+                swal("성공", "수정이 완료되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
             } else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
             } else {
-                alert("서버오류!");
+                swal("오류", "서버 오류!", "error");
             }
         }
     });
@@ -490,17 +493,19 @@ $(document).on('click','#modalDelete', function() {
         data: {"delete_diary_id" : diaryId},
         success: function(response) {
             if(response["result"] == "success") {
-                alert("삭제가 완료되었습니다.");
-                if(title == "나의 일기") {
-                    window.location.replace("/showMyDiary");
-                } else {
-                    window.location.replace("/showEveryDiary");
-                }
+                swal("성공", "삭제가 완료되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
             } else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
             } else {
-                alert("서버오류!");
+                swal("오류", "서버 오류!", "error");
             }
         }
     });
