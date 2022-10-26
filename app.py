@@ -208,29 +208,6 @@ def getDiary():
         diary = db.diary.find({'user': get_diary_user, 'fixed_date': get_diary_date}).sort('update_time', 1)
         get_diary_list = dumps(diary)
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
-# function appendDiary(date) {
-#     memo_wrtie_form();
-#     let new_diary_title = $('#diary_title').val();
-#     let new_diary_content = $('#diary_content').val();
-#     $.ajax({
-#         type: "POST",
-#         url: "/api/appendDiary",
-#         data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':date},
-#         success: function (response) {
-#             if (response["result"] === "success") {
-#                 getMemos();
-#             }
-#             else if(response.result =='fail'){
-#                 alert(response['msg']);
-#                 window.location.replace("/sign_in");
-#             }
-#             else {
-#                 alert("서버 오류!");
-#             }
-#         }
-#     })
-
-# }
 
 # 일기 수정
 @app.route('/api/updateDiary', methods=['post'])
@@ -248,6 +225,19 @@ def updateDiary():
         update_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
         db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_date':update_diary_time}})
     return jsonify({'result': 'success'})
+
+# 메모 삭제
+@app.route('/api/deleteDiary', methods=['post'])
+def deleteDiary():
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        delete_diary_id = request.form['delete_diary_id']
+        db.diary.delete_one({'_id': ObjectId(delete_diary_id)})
+        return jsonify({'result': 'success'})
 
 # nav바 로그인 상태 체크하기
 @app.route('/login_check', methods=['GET'])
