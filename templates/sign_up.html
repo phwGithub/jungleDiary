@@ -34,7 +34,7 @@
         let password_chck = $("#pwd_chck").val()
 
         if (username == "") {
-            alert('아이디를 입력하세요!')
+            alert('아이디(이름)를 입력하세요!')
             $("#input-username").focus()
             return;
         }
@@ -51,7 +51,6 @@
             return;
         }
 
-        // console.log('gi')
 
         $.ajax({
             type: "POST",
@@ -70,7 +69,7 @@
                 else {
                     let msg = response['msg']
                     console.log(msg)
-                    alert("동일한 이름을 가진 회원이 있습니다.")
+                    alert("동일한 이름을 가진 회원이 있습니다. 동명이인의 경우 '김정글1'처럼 숫자를 붙여주세요.")
                 }
             }
         });
@@ -87,7 +86,7 @@
     <h1 class="title signup">회원가입</h1>
     <div class="field signup">
         <div class="control">
-            <input class="input is-danger" id="userid" type="text" placeholder="아이디(이름)를 입력하세요">
+            <input class="input is-danger" id="userid" type="text" placeholder="아이디를 입력하세요(이름 사용 권장)">
         </div>
     </div>
 

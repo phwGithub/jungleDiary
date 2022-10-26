@@ -20,7 +20,7 @@
   </style>
   <script>
 
-    // 로그인한 상태이면 사용자 이름 + 로그아웃 창만 띄우기
+    // 로그인한 상태이면 사용자 이름 + 로그아웃 버튼만 띄우기
     $(document).ready(function () {
       $.ajax({
         type: "GET",
@@ -30,11 +30,11 @@
           if (response['result'] == 'success') {
             let name = response['id']
             console.log(name)
-            $('#userinfo').empty()
+            $('#user-state').empty()
             let temp_html =
               `<span class="greet" > <i class="far fa-user"></i>   <span style="font-weight: bold; color:#00d67a;">${name}</span>님 환영합니다!</span>
               <button class="button is-light" onclick='signOut()'> 로그아웃 </button>`
-            $('#userinfo').append(temp_html)
+            $('#user-state').append(temp_html)
 
           }
         }
@@ -89,8 +89,8 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
-          <!-- ▽회원가입, 로그인, 로그아웃, 사용자 환영 메시지가 들어갈 부분 -->
-          <div class="buttons" id="userinfo">
+          <!-- ▽ div 안에 회원가입, 로그인, 로그아웃, 사용자 환영 메시지가 들어감 -->
+          <div class="buttons" id="user-state">
           </div>
 
         </div>
