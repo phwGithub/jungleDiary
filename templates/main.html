@@ -61,6 +61,7 @@
         width:70%;
         margin:auto;
         padding-top:10px;
+        padding-bottom: 10px;
     }
     .edit_delete_botton{
         height:40px;
@@ -75,6 +76,27 @@
     .memo_eidt{
         width:80%;
     }
+
+    .write_diary_botton {
+        display: block;
+        margin:auto;
+        padding-top:10px;
+        width:70%;
+    }
+    .diary_input_box{
+        width:70%;
+        margin:auto;
+        padding-bottom:10px;
+        display:none;
+    }
+    .diary_title_input {
+        font-size: 15px;
+    }
+    .diary_comment_input {
+        margin-bottom: 10px;
+
+    }
+
 </style>
 {% endblock %}
 
@@ -83,18 +105,37 @@
 <div>
     <div class = 'mainbox box'>
         <div class = 'field'>
-            <div>
-                <h1 class="title">오늘의 메모</h1>
-            </div>
-            <div>
-                <p class = 'date'>{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
-            </div>
-            <div class="memo_input_box">
-                <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
-                <button onclick="appendMemo()" class="button is-info is-light memo_botton">메모하기!</button>
-            </div>
-            <div class="memos" id="memos">
+            <div class="memo_only">
+                <div>
+                    <h1 class="title">오늘의 메모</h1>
+                </div>
+                <div>
+                    <p class = 'date'>{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
+                </div>
+                <div class="memo_input_box">
+                    <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
+                    <button onclick="appendMemo()" class="button is-info is-light memo_botton">메모하기</button>
+                </div>
+                <button onclick='diary_wrtie_form()' class="button is-primary write_diary_botton">일기쓰기</button>
 
+            </div>
+
+
+            <div class="box diary_input_box" id="diary_form">
+                <div>
+                    <div>
+                        <h1 class="title">오늘의 일기</h1>
+                        <p class="has-text-centered is-size-4 has-text-weight-bold">{{date[0]}}년 {{date[1]}}월 {{date[2]}}일</p>
+                        <span class="block is-size-4"><strong>제목</strong></span>
+                        <input class="input mb-4 mt-2" id="diary_title" type="text" placeholder="제목을 입력해주세요">
+                        <span class="block is-size-4 yb-6"><strong>내용</strong></span>
+                        <textarea class="textarea mt-2 is-medium diary_comment_input" id="diary_content" placeholder="내용을 입력해주세요." rows="11"></textarea>
+                        <button onclick='appendDiary("{{date[0]}}{{date[1]}}{{date[2]}}")' class="button is-primary write_diary_botton">일기 저장</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memos" id="memos">
             </div>
         </div>
     </div>
@@ -155,6 +196,10 @@
                     if (response["result"] === "success") {
                         getMemos();
                     }
+                    else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                    }
                     else {
                         alert("서버 오류!");
                     }
@@ -174,6 +219,10 @@
             success: function (response) {
                 if (response["result"] === "success") {
                     getMemos();
+                }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
                 }
                 else {
                     alert("서버 오류!");
@@ -202,6 +251,10 @@
                     $('#memo'+memo_num).append(edit_html);
                     $('#memo_input'+memo_num).val(memo_content);
                 }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
                 else {
                     alert('오류발생')
                 }
@@ -218,13 +271,48 @@
                 if (response["result"] === "success") {
                     getMemos();
                 }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
                 else {
                     alert("서버 오류!");
                 }
             }
         })
     }
+    function diary_wrtie_form() {
+        $(".diary_input_box").show();
+        $(".memo_only").hide();
+    }
 
+    function memo_wrtie_form() {
+        $(".diary_input_box").hide();
+        $(".memo_only").show();
+    }
+    function appendDiary(date) {
+        memo_wrtie_form();
+        let new_diary_title = $('#diary_title').val();
+        let new_diary_content = $('#diary_content').val();
+        $.ajax({
+            type: "POST",
+            url: "/api/appendDiary",
+            data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':date},
+            success: function (response) {
+                if (response["result"] === "success") {
+                    getMemos();
+                }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
+                else {
+                    alert("서버 오류!");
+                }
+            }
+        })
+
+    }
 </script>
 {% endblock %}
 
