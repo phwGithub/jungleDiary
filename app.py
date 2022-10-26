@@ -189,7 +189,7 @@ def appendDiary():
         new_diary_content = request.form['new_diary_content']
         new_diary_date = request.form['new_diary_date']
         new_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
-        db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
+        db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time, 'likes' : 0})
         return jsonify({'result': 'success'})
 # function appendDiary(date) {
 #     memo_wrtie_form();
@@ -235,11 +235,18 @@ def getDiary():
 # 일기 수정
 @app.route('/api/updateDiary', methods=['post'])
 def updateDiary():
-    update_diary_id = request.form['update_diary_id']
-    update_diary_title = request.form['update_diary_title']
-    update_diary_content = request.form['update_diary_content']
-    update_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
-    db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_time':update_diary_time}})
+    ## api로 서버로 요청받았을때 토큰 검증 양식
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        update_diary_id = request.form['update_diary_id']
+        update_diary_title = request.form['update_diary_title']
+        update_diary_content = request.form['update_diary_content']
+        update_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
+        db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_date':update_diary_time}})
     return jsonify({'result': 'success'})
 
 # nav바 로그인 상태 체크하기

@@ -346,7 +346,7 @@ $(document).on('click', '.date-picker', function() {
                 console.log(diaryList);
                 $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
                 diaryList.forEach(element => {
-                    showMyDiary(element.writer, element.title, element.likes, element.content,element['_id']['$oid']);
+                    showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                 });
                 
             }
@@ -392,6 +392,26 @@ $(document).on('click','#modalAdd', function() {
     modalButtonControl("modalAddClick"); 
 });
 
+// 일기수정
+$(document).on('click','#modalModifyConfirm', function() {
+    let diaryId = $("#diaryHiddenId").val();
+    let diaryTitle = $("#modalDiaryTitle").val();
+    let diaryContent = $("#modalDiaryContent").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/updateDiary",
+        data: {"update_diary_id" : diaryId, "update_diary_title" : diaryTitle, "update_diary_content" : diaryContent},
+        success: function(response) {
+            if(response["result"] == "success") {
+                alert("수정이 완료되었습니다.");
+            } else {
+                alert("서버오류!");
+            }
+        }
+    });
+});
+
 // 일기 리스트에서 일기 클릭 이벤트
 $(document).on('click','.modalDiary', function() {
     // 모달 일기 작성 html
@@ -402,7 +422,8 @@ $(document).on('click','.modalDiary', function() {
     let likes = $(this).find("#likes").text();
 
     let writeDiaryhtml = `
-    <p class="has-text-centered is-size-4 has-text-weight-bold" id="${id}">${year}년 ${month}월 ${date}일</p>
+    <input type="hidden" value="${id}" id="diaryHiddenId"/>
+    <p class="has-text-centered is-size-4 has-text-weight-bold" id="date">${year}년 ${month}월 ${date}일</p>
     <span class="block is-size-4"><strong>제목</strong></span>
     <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" value="${title}" disabled>
     <span class="block is-size-4 yb-6"><strong>내용</strong></span>
