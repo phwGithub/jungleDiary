@@ -348,9 +348,10 @@ $(document).on('click', '.date-picker', function() {
                 diaryList.forEach(element => {
                     showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                 });
-                
-            }
-            else {
+            }else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+            } else {
                 alert("서버 오류!");
             }
         }
@@ -374,7 +375,7 @@ $(document).on('click','#modalModify', function() {
     modalButtonControl("modalModifyConfirmClick");
 });
 
-// 일기추가
+// 일기추가 창
 $(document).on('click','#modalAdd', function() {
     // 모달 일기 작성 html
     let writeDiaryhtml = `
@@ -392,6 +393,32 @@ $(document).on('click','#modalAdd', function() {
     modalButtonControl("modalAddClick"); 
 });
 
+// 일기추가
+$(document).on('click','#modalDiaryAdd', function() {
+    let new_diary_title = $("#modalDiaryTitle").val();
+    let new_diary_content = $("#modalDiaryContent").val();
+    let new_diary_date = year + month + date;
+
+    $.ajax({
+        type: "POST",
+        url: "/api/appendDiary",
+        data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':new_diary_date},
+        success: function (response) {
+            if (response["result"] === "success") {
+                alert("일기가 추가되었습니다.");
+                window.location.replace("/showMyDiary");
+            }
+            else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
+            }
+            else {
+                alert("서버 오류!");
+            }
+        }
+    })
+});
+
 // 일기수정
 $(document).on('click','#modalModifyConfirm', function() {
     let diaryId = $("#diaryHiddenId").val();
@@ -405,6 +432,32 @@ $(document).on('click','#modalModifyConfirm', function() {
         success: function(response) {
             if(response["result"] == "success") {
                 alert("수정이 완료되었습니다.");
+                window.location.replace("/showMyDiary");
+            } else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
+            } else {
+                alert("서버오류!");
+            }
+        }
+    });
+});
+
+// 일기삭제
+$(document).on('click','#modalDelete', function() {
+    let diaryId = $("#diaryHiddenId").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/deleteDiary",
+        data: {"delete_diary_id" : diaryId},
+        success: function(response) {
+            if(response["result"] == "success") {
+                alert("삭제가 완료되었습니다.");
+                window.location.replace("/showMyDiary");
+            } else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
             } else {
                 alert("서버오류!");
             }
