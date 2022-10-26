@@ -30,7 +30,7 @@
     $(document).ready(function () {
         let msg = "{{msg}}"
         if(msg) {
-            alert(msg);
+            swal("로그인 오류",msg, "error");
         }
     });
 
@@ -39,13 +39,13 @@
         let password = $("#input-password").val()
 
         if (username == "") {
-            alert('아이디를 입력하세요!')
+            swal("아이디 오류", '아이디를 입력하세요!', "error")
             $("#input-username").focus()
             return;
         }
 
         if (password == "") {
-            alert('비밀번호를 입력하세요!')
+            swal("패스워드 오류",'비밀번호를 입력하세요!', "error")
             $("#input-password").focus()
             return;
         }
@@ -61,10 +61,10 @@
                 if (response['result'] == 'success') {
                     $.cookie('mytoken', response['token'], { path: '/' });
                     let msg = response['msg']
-                    alert(msg)
+                    swal("환영합니다!",msg,"error")
                     window.location.replace("/mainpage")
                 } else {
-                    alert(response['msg'])
+                    swal("오류",response['msg'],"error")
                 }
             }
         });
