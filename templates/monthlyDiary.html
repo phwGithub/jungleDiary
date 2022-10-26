@@ -329,44 +329,32 @@ $(document).on('click', '.date-picker', function() {
     date = $(this).attr("data-date");
     month = $(this).attr("data-month");
     year = $(this).attr("data-year");
+    date = (date * 1) < 10 ? "0" + date : date;
+    month = (month * 1) < 10 ? "0" + month : month;
+    
     $("#modal").addClass('is-active');
 
     // 일기정보 가져오기
+    $(".modal-card-body").html("");
     $.ajax({
         type: "GET",
-        url: "",
+        url: "/api/getDiary",
+        data: {"get_diary_date" : year + month + date},
+        success: function(response) {
+            if (response["result"] === "success") {
+                let diaryList = JSON.parse(response["get_diary_list"])
+                console.log(diaryList);
+                $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                diaryList.forEach(element => {
+                    showMyDiary(element.writer, element.title, element.likes, element.content,element['_id']['$oid']);
+                });
+                
+            }
+            else {
+                alert("서버 오류!");
+            }
+        }
     });
-
-    // 모달 일기 리스트 html
-    let getDiaryListhtml = `
-    <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
-    <div class="card mb-4 modalDiary" id="modalDiary0">
-        <div class="card-content">
-            <div class="content">
-                <p>작성자 : 이충일</p>
-                <p>
-                    제목 : 오늘도 보람찬 하루였다.&nbsp&nbsp&nbsp&nbsp
-                    <span class="icon-text">
-                        <span class="icon">
-                            <i class="far fa-thumbs-up"></i>
-                        </span>
-                        <span>1</span>
-                    </span>
-                </p> 
-            </div>
-        </div>
-    </div>
-    <div class="card mb-4 modalDiary" id="modalDiary1">
-        <div class="card-content">
-            <div class="content">
-                <p>작성자 : 이충일</p>
-                <p>제목 : 정글 0주차 정리.</p>
-            </div>
-        </div>
-    </div>
-    `
-
-    $(".modal-card-body").html(getDiaryListhtml);
 
     //modal 버튼 제어
     modalButtonControl("date-pickerClick");
@@ -407,12 +395,18 @@ $(document).on('click','#modalAdd', function() {
 // 일기 리스트에서 일기 클릭 이벤트
 $(document).on('click','.modalDiary', function() {
     // 모달 일기 작성 html
+    let id = $(this).attr('id');
+    let writer = $(this).find("#writer").text().split(" : ")[1];
+    let title = $(this).find("#title").text().split(" : ")[1];
+    let content = $(this).find("input").val();
+    let likes = $(this).find("#likes").text();
+
     let writeDiaryhtml = `
-    <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
+    <p class="has-text-centered is-size-4 has-text-weight-bold" id="${id}">${year}년 ${month}월 ${date}일</p>
     <span class="block is-size-4"><strong>제목</strong></span>
-    <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" value="테스트 제목" disabled>
+    <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" value="${title}" disabled>
     <span class="block is-size-4 yb-6"><strong>내용</strong></span>
-    <textarea class="textarea mt-2 is-medium" id="modalDiaryContent" rows="10" disabled>테스트 내용</textarea>
+    <textarea class="textarea mt-2 is-medium" id="modalDiaryContent" rows="10" disabled>${content}</textarea>
     `;
 
     $(".modal-card-body").html("");
@@ -460,5 +454,31 @@ function modalButtonControl(flag) {
     }
 }
 /* 달력 이벤트 end */
+
+/* html 생성부 */
+function showMyDiary(diary_writer, diary_title, diary_likes, diary_content, diary_id) {
+        // 모달 일기 리스트 html
+        let getDiaryListhtml = `
+        <div class="card mb-4 modalDiary" id="${diary_id}">
+            <div class="card-content">
+                <div class="content">
+                    <p id="writer">작성자 : ${diary_writer}</p>
+                    <p>
+                        <span id="title">제목 : ${diary_title}</span>&nbsp&nbsp&nbsp&nbsp
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="far fa-thumbs-up"></i>
+                            </span>
+                            <span id="likes">${diary_likes}</span>
+                        </span>
+                        <input type="hidden" value="${diary_content}">
+                    </p> 
+                </div>
+            </div>
+        </div>
+    `
+
+    $(".modal-card-body").append(getDiaryListhtml);
+}
 </script>
 {% endblock %}

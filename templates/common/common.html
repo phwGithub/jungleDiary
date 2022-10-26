@@ -8,24 +8,44 @@
   <script src="https://code.jquery.com/jquery-3.6.1.min.js"
     integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <title>{% block title %}{% endblock %}</title>
   {% block cdns %}{% endblock %}
 
-  <!-- todo /// 로그아웃 기능 구현하기  -->
+  <style>
+    .greet {
+      margin: 0 0 auto;
+      padding: 7px 16px;
+    }
+  </style>
   <script>
 
-    // todo/// 로그인한 상태이면 사용자 이름 + 로그아웃 창만 띄우기
-    // $(document).ready(function () {
+    // 로그인한 상태이면 사용자 이름 + 로그아웃 창만 띄우기
+    $(document).ready(function () {
+      $.ajax({
+        type: "GET",
+        url: "/login_check",
+        data: {},
+        success: function (response) {
+          if (response['result'] == 'success') {
+            let name = response['id']
+            console.log(name)
+            $('#userinfo').empty()
+            let temp_html =
+              `<span class="greet" > <i class="far fa-user"></i>   <span style="font-weight: bold; color:#00d67a;">${name}</span>님 환영합니다!</span>
+              <button class="button is-light" onclick='signOut()'> 로그아웃 </button>`
+            $('#userinfo').append(temp_html)
 
-
-    // });
+          }
+        }
+      })
+    })
 
     // 로그아웃
     function signOut() {
       $.removeCookie('mytoken', { path: '/' });
       alert("로그아웃 성공")
       $('#user-info').empty()
-      
       let temp_html =
         `
       <div class="buttons">
@@ -69,15 +89,8 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
-
+          <!-- ▽회원가입, 로그인, 로그아웃, 사용자 환영 메시지가 들어갈 부분 -->
           <div class="buttons" id="userinfo">
-            <a class="button is-primary" a href='/sign_up'>
-              <strong>회원가입</strong>
-            </a>
-            <a class="button is-light" a href='/sign_in'> 로그인 </a>
-
-            <!-- todo //// 로그아웃 기능 추가 -->
-            <!-- <button class="button is-light" onclick='signOut()'> 로그아웃 </button> -->
           </div>
 
         </div>
