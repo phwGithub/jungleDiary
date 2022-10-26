@@ -39,17 +39,19 @@
         let password = $("#input-password").val()
 
         if (username == "") {
-            swal("아이디 오류", '아이디를 입력하세요!', "error")
-            $("#input-username").focus()
+            swal("아이디 오류", '아이디를 입력하세요!', "error").then(function() {
+                $("#input-username").focus()
+            });
             return;
         }
 
         if (password == "") {
-            swal("패스워드 오류",'비밀번호를 입력하세요!', "error")
-            $("#input-password").focus()
+            swal("패스워드 오류",'비밀번호를 입력하세요!', "error").then(function() {
+                $("#input-password").focus()
+            });
             return;
         }
-        console.log('gi')
+
         $.ajax({
             type: "POST",
             url: "/sign_in",
@@ -61,8 +63,9 @@
                 if (response['result'] == 'success') {
                     $.cookie('mytoken', response['token'], { path: '/' });
                     let msg = response['msg']
-                    swal("환영합니다!",msg,"success")
-                    window.location.replace("/mainpage")
+                    swal("환영합니다!",msg,"success").then(function() {
+                        window.location.replace("/mainpage")                       
+                    })
                 } else {
                     swal("오류",response['msg'],"error")
                 }

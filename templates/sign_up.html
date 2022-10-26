@@ -34,20 +34,23 @@
         let password_chck = $("#pwd_chck").val()
 
         if (username == "") {
-            swal("오류", '아이디(이름)를 입력하세요!', "error");
-            $("#input-username").focus()
+            swal("오류", '아이디(이름)를 입력하세요!', "error").then(function() {
+                $("#input-username").focus()
+            });
             return;
         }
 
         if (password == "") {
-            swal("오류",'비밀번호를 입력하세요!', "error")
-            $("#input-password").focus()
+            swal("오류",'비밀번호를 입력하세요!', "error").then(function() {
+                $("#input-password").focus()
+            });
             return;
         }
 
         if (password_chck != password) {
-            swal("오류", '비밀번호가 일치하지 않습니다', "error")
-            $("#pwd_chck").focus()
+            swal("오류", '비밀번호가 일치하지 않습니다', "error").then(function() {
+                $("#pwd_chck").focus()
+            });
             return;
         }
 
@@ -62,13 +65,12 @@
             success: function (response) {
                 if (response['result'] == 'success') {
                     let msg = response['msg']
-                    console.log(msg)
-                    swal("성공","가입 성공!","success")
-                    window.location.replace("/sign_in");
+                    swal("성공","가입 성공!","success").then(function() {
+                        window.location.replace("/sign_in");
+                    })
                 }
                 else {
                     let msg = response['msg']
-                    console.log(msg)
                     swal("오류","동일한 이름을 가진 회원이 있습니다. 동명이인의 경우 '김정글1'처럼 숫자를 붙여주세요.", "error")
                 }
             }

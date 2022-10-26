@@ -376,8 +376,11 @@ $(document).on('click', '.date-picker', function() {
             success: function(response) {
                 if (response["result"] === "success") {
                     let diaryList = JSON.parse(response["get_diary_list"])
-                    console.log(diaryList);
                     $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                    if(diaryList.length == 0) {
+                        $(".modal-card-body").append(`<p class="has-text-centered is-size-5 mt-6 mb-6">작성한 일기가 없습니다.</p>`);
+                        return;
+                    }
                     diaryList.forEach(element => {
                         showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                     });
