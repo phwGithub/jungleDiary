@@ -162,7 +162,7 @@ body {
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">나의 일기</p>
+            <p class="modal-card-title">{{title}}</p>
             <button class="delete" aria-label="close"></button>
           </header>
           <section class="modal-card-body">
@@ -435,7 +435,11 @@ $(document).on('click','#modalDiaryAdd', function() {
         success: function (response) {
             if (response["result"] === "success") {
                 alert("일기가 추가되었습니다.");
-                window.location.replace("/showMyDiary");
+                if(title == "나의 일기") {
+                    window.location.replace("/showMyDiary");
+                } else {
+                    window.location.replace("/showEveryDiary");
+                }
             }
             else if(response.result =='fail'){
                 alert(response['msg']);
@@ -461,7 +465,11 @@ $(document).on('click','#modalModifyConfirm', function() {
         success: function(response) {
             if(response["result"] == "success") {
                 alert("수정이 완료되었습니다.");
-                window.location.replace("/showMyDiary");
+                if(title == "나의 일기") {
+                    window.location.replace("/showMyDiary");
+                } else {
+                    window.location.replace("/showEveryDiary");
+                }
             } else if(response.result =='fail'){
                 alert(response['msg']);
                 window.location.replace("/sign_in");
@@ -483,7 +491,11 @@ $(document).on('click','#modalDelete', function() {
         success: function(response) {
             if(response["result"] == "success") {
                 alert("삭제가 완료되었습니다.");
-                window.location.replace("/showMyDiary");
+                if(title == "나의 일기") {
+                    window.location.replace("/showMyDiary");
+                } else {
+                    window.location.replace("/showEveryDiary");
+                }
             } else if(response.result =='fail'){
                 alert(response['msg']);
                 window.location.replace("/sign_in");
