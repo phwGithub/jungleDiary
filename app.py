@@ -38,7 +38,6 @@ def validate_token(token):
 @app.route('/')
 def home():
     token = request.cookies.get('mytoken')
-    print(token)
     if (validate_token(token) == '토큰만료') or (validate_token(token) == '유효하지않은토큰'):
         return render_template("sign_in.html", title="정글 다이어리")
     else:
@@ -208,6 +207,16 @@ def updateDiary():
     update_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
     db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_time':update_diary_time}})
     return jsonify({'result': 'success'})
+
+# todo // 로그인 상태 체크하기
+@app.route('/login_check', methods=['GET'])
+def loginCheck():
+    token = request.cookies.get('mytoken')
+    if (validate_token(token) == '토큰만료') or (validate_token(token) == '유효하지않은토큰'):
+        return jsonify({'result': 'fail', 'msg': '토큰이 만료되었거나 유효하지 않습니다'})
+    else:
+        name = validate_token(token)['id']
+        return jsonify({'result': 'success', 'msg': '로그인 상태입니다', 'id':name })
 
 
 if __name__ == '__main__':
