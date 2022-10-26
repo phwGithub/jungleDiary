@@ -99,21 +99,21 @@ def sign_in():
 # HTML 화면 보여주기
 @app.route('/mainpage')
 def mainpage():
-    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
     now_date = date.split(' ')
     return render_template('main.html', title="오늘의 메모", date=now_date)
 
 # 나의 일기 보여주기
 @app.route('/showMyDiary')
 def showMyDiary():
-    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
     now_date = date.split(' ')
     return render_template('monthlyDiary.html', title="나의 일기", date=now_date)
 
 # 모두의 일기 보여주기
 @app.route('/showEveryDiary')
 def showEveryDiary():
-    date = time.strftime('%y %m %d %a', time.localtime(time.time()))
+    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
     now_date = date.split(' ')
     return render_template('monthlyDiary.html', title="모두의 일기", date=now_date)
 
@@ -128,7 +128,7 @@ def appendMemos():
     else:
         appending_user = validate_token(token)['id']
         new_memo = request.form['new_memo']
-        new_memo_date = int(time.strftime('%y%m%d', time.localtime(time.time())))
+        new_memo_date = int(time.strftime('%Y%m%d', time.localtime(time.time())))
         new_memo_time = int(time.strftime('%H%M%S', time.localtime(time.time())))
         db.memos.insert_one({'user': appending_user, 'content': new_memo,'date': new_memo_date, 'time': new_memo_time})
         return jsonify({'result': 'success'})
@@ -138,13 +138,13 @@ def appendMemos():
 def getMemos():
     token = request.cookies.get('mytoken')
     if validate_token(token) == '토큰만료':
-        return render_template('sign_in.html', msg='토큰만료')
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
     elif validate_token(token) =='유효하지않은토큰':
-        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     else:
-        memo_date = int(time.strftime('%y%m%d', time.localtime(time.time())))
+        memo_date = int(time.strftime('%Y%m%d', time.localtime(time.time())))
         memo_user = validate_token(token)['id']
-        memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', 1)
+        memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', -1)
         user_memos = dumps(memos)
         return jsonify({'result': 'success', 'user_memos': user_memos})
 
@@ -154,9 +154,9 @@ def getMemos():
 def deleteMemo():
     token = request.cookies.get('mytoken')
     if validate_token(token) == '토큰만료':
-        return render_template('sign_in.html', msg='토큰만료')
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
     elif validate_token(token) =='유효하지않은토큰':
-        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     else:
         delete_memo_id = request.form['delete_memo_id']
         db.memos.delete_one({'_id': ObjectId(delete_memo_id)})
@@ -167,9 +167,9 @@ def deleteMemo():
 def updateMemo():
     token = request.cookies.get('mytoken')
     if validate_token(token) == '토큰만료':
-        return render_template('sign_in.html', msg='토큰만료')
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
     elif validate_token(token) =='유효하지않은토큰':
-        return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     else:
         update_memo_id = request.form['update_memo_id']
         update_memo = request.form['update_memo']
@@ -183,7 +183,7 @@ def appendDiary():
     new_diary_title = request.form['new_diary_title']
     new_diary_content = request.form['new_diary_content']
     new_diary_date = request.form['new_diary_date']
-    new_diary_time = int(time.strftime('%y%m%d%H%M%S', time.localtime(time.time())))
+    new_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
     db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,
                         'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
     return jsonify({'result': 'success'})
@@ -205,7 +205,7 @@ def updateDiary():
     update_diary_id = request.form['update_diary_id']
     update_diary_title = request.form['update_diary_title']
     update_diary_content = request.form['update_diary_content']
-    update_diary_time = int(time.strftime('%y%m%d%H%M%S', time.localtime(time.time())))
+    update_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
     db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_time':update_diary_time}})
     return jsonify({'result': 'success'})
 
