@@ -31,8 +31,10 @@ body {
     max-width: 1100px;
     margin: 0 auto;
     overflow: auto;
-    border: solid 1px;
+    /* border: solid 1px; */
+    border-color: gray;
     border-radius: 30px;
+    box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 2%);
 }
 
 .button-container-calendar button {
@@ -94,10 +96,14 @@ body {
 
 #previous {
     float: left;
+    width: 41px;
+    height: 39px;
 }
 
 #next {
     float: right;
+    width: 41px;
+    height: 39px;
 }
 
 .footer-container-calendar {
@@ -126,12 +132,14 @@ body {
 {% block body %}
 <div class="wrapper">
 
+    
     <div class="container-calendar">
+        <h1 class="title has-text-centered" style="margin: 0 0 30px;">{{title}}</h1>
         <h3 id="monthAndYear"></h3>
         
         <div class="button-container-calendar">
-            <button id="previous" onclick="previous()">&#8249;</button>
-            <button id="next" onclick="next()">&#8250;</button>
+            <button id="previous" onclick="previous()"><i class="fas fa-less-than"></i></button>
+            <button id="next" onclick="next()"><i class="fas fa-greater-than"></i></button>
         </div>
         
         <table class="table-calendar" id="calendar" data-lang="en">
