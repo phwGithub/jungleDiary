@@ -217,20 +217,6 @@ def appendDiary():
 #     })
 
 # }
-@app.route('/api/getDiary', methods=['get'])
-def getDiary():
-    ## api로 서버로 요청받았을때 토큰 검증 양식
-    token = request.cookies.get('mytoken')
-    if validate_token(token) == '토큰만료':
-        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
-    elif validate_token(token) =='유효하지않은토큰':
-        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
-    else:
-        get_diary_user = validate_token(token)['id']
-        get_diary_date = request.args.get('get_diary_date')
-        diary = db.diary.find({'user': get_diary_user, 'fixed_date': get_diary_date}).sort('update_time', 1)
-        get_diary_list = dumps(diary)
-    return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
 
 # 내 일기 불러오기
 @app.route('/api/getDiary', methods=['get'])
