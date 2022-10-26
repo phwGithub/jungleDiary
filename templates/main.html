@@ -123,8 +123,12 @@
                         show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
                     }
                 }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
                 else {
-                    alert('오류발생')
+                    alert('서버오류')
                 }
             }
         })

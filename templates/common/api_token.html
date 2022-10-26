@@ -1,0 +1,28 @@
+<script>
+    function getMemos() {
+        $("#memos").html("");
+        $.ajax({
+            type: "get",
+            url: "/api/getMemos",
+            data: {},
+            success: function (response) {
+                if (response.result === "success") {
+                    ///다른 액션 시에 input박스들 비우기
+                    $("#new_memo").val("")
+                    let memos_dumps = response['user_memos'];
+                    let user_memos = JSON.parse(memos_dumps);
+                    for (let i = 0; i<user_memos.length; i++) {
+                        show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
+                    }
+                }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
+                else {
+                    alert('서버오류')
+                }
+            }
+        })
+    };
+</script>
