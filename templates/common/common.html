@@ -8,9 +8,16 @@
   <script src="https://code.jquery.com/jquery-3.6.1.min.js"
     integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <title>{% block title %}{% endblock %}</title>
   {% block cdns %}{% endblock %}
 
+  <style>
+    .greet {
+      margin: 0 0 auto;
+      padding: 7px 16px;
+    }
+  </style>
   <script>
 
     // 로그인한 상태이면 사용자 이름 + 로그아웃 창만 띄우기
@@ -25,7 +32,7 @@
             console.log(name)
             $('#userinfo').empty()
             let temp_html =
-              `<button class=button is-white" > ${name}님 환영합니다!</button>
+              `<span class="greet" > <i class="far fa-user"></i>   <span style="font-weight: bold; color:#00d67a;">${name}</span>님 환영합니다!</span>
               <button class="button is-light" onclick='signOut()'> 로그아웃 </button>`
             $('#userinfo').append(temp_html)
 
