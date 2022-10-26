@@ -114,9 +114,10 @@ def showMyDiary():
     elif validate_token(token) =='유효하지않은토큰':
         return render_template('sign_in.html', msg="로그인이 필요합니다.")
     else:
+        token = validate_token(token)
         date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
         now_date = date.split(' ')
-    return render_template('monthlyDiary.html', title="나의 일기", date=now_date)
+    return render_template('monthlyDiary.html', title="나의 일기", date=now_date, mytoken=token)
 
 # 모두의 일기 보여주기
 @app.route('/showEveryDiary')
@@ -127,9 +128,10 @@ def showEveryDiary():
     elif validate_token(token) =='유효하지않은토큰':
         return render_template('sign_in.html', msg="로그인이 필요합니다.")
     else:
+        token = validate_token(token)
         date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
         now_date = date.split(' ')
-    return render_template('monthlyDiary.html', title="모두의 일기", date=now_date)
+    return render_template('monthlyDiary.html', title="모두의 일기", date=now_date, mytoken=token)
 
 # 메모 작성 (완)
 @app.route('/api/appendMemo', methods=['post'])

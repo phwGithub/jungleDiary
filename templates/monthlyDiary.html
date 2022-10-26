@@ -180,6 +180,9 @@ body {
 {% endblock %}
 {% block script %}
 <script>
+let title = "{{title}}";
+let myId = "{{mytoken['id']}}"
+
 /* 달력 출력 Start */
 function generate_year_range(start, end) {
     var years = "";
@@ -335,28 +338,53 @@ $(document).on('click', '.date-picker', function() {
     
     $("#modal").addClass('is-active');
 
+
     // 일기정보 가져오기
     $(".modal-card-body").html("");
-    $.ajax({
-        type: "GET",
-        url: "/api/getDiary",
-        data: {"get_diary_date" : year + month + date},
-        success: function(response) {
-            if (response["result"] === "success") {
-                let diaryList = JSON.parse(response["get_diary_list"])
-                console.log(diaryList);
-                $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
-                diaryList.forEach(element => {
-                    showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
-                });
-            }else if(response.result =='fail'){
-                    alert(response['msg']);
-                    window.location.replace("/sign_in");
-            } else {
-                alert("서버 오류!");
+
+    if(title == "나의 일기") {
+        $.ajax({
+            type: "GET",
+            url: "/api/getDiary",
+            data: {"get_diary_date" : year + month + date},
+            success: function(response) {
+                if (response["result"] === "success") {
+                    let diaryList = JSON.parse(response["get_diary_list"])
+                    console.log(diaryList);
+                    $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                    diaryList.forEach(element => {
+                        showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
+                    });
+                }else if(response.result =='fail'){
+                        alert(response['msg']);
+                        window.location.replace("/sign_in");
+                } else {
+                    alert("서버 오류!");
+                }
             }
-        }
-    });
+        });
+    } else {
+        $.ajax({
+            type: "GET",
+            url: "/api/getEveryDiary",
+            data: {"get_diary_date" : year + month + date},
+            success: function(response) {
+                if (response["result"] === "success") {
+                    let diaryList = JSON.parse(response["get_diary_list"])
+                    console.log(diaryList);
+                    $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                    diaryList.forEach(element => {
+                        showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
+                    });
+                }else if(response.result =='fail'){
+                        alert(response['msg']);
+                        window.location.replace("/sign_in");
+                } else {
+                    alert("서버 오류!");
+                }
+            }
+        });
+    }
 
     //modal 버튼 제어
     modalButtonControl("date-pickerClick");
@@ -488,7 +516,12 @@ $(document).on('click','.modalDiary', function() {
     $(".modal-card-body").html(writeDiaryhtml);
     
     //modal 버튼 제어
-    modalButtonControl("modalDiaryClick");
+    if(writer != myId) {
+        modalButtonControl("modalNotMyDiaryClick");
+    } else {
+        modalButtonControl("modalDiaryClick");
+    }
+    
 });
 
 function modalButtonControl(flag) {
@@ -523,6 +556,15 @@ function modalButtonControl(flag) {
         $("#modalModify").css("display", "block");
         $("#modalModifyConfirm").css("display", "none");
         $("#modalDelete").css("display", "block");
+        $("#modalDiaryAdd").css("display", "none");
+        $("#modalAdd").css("display", "none");
+        return;
+    }
+
+    if(flag == "modalNotMyDiaryClick") {
+        $("#modalModify").css("display", "none");
+        $("#modalModifyConfirm").css("display", "none");
+        $("#modalDelete").css("display", "none");
         $("#modalDiaryAdd").css("display", "none");
         $("#modalAdd").css("display", "none");
         return;
