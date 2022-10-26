@@ -92,25 +92,43 @@ def sign_in():
     else:   # result 못찾음
         return jsonify({'result': 'fail', 'msg': '가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.'})
 
-# HTML 화면 보여주기
+# 메인 화면 보여주기
 @app.route('/mainpage')
 def mainpage():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
     return render_template('main.html', title="오늘의 메모", date=now_date)
 
 # 나의 일기 보여주기
 @app.route('/showMyDiary')
 def showMyDiary():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
     return render_template('monthlyDiary.html', title="나의 일기", date=now_date)
 
 # 모두의 일기 보여주기
 @app.route('/showEveryDiary')
 def showEveryDiary():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
     return render_template('monthlyDiary.html', title="모두의 일기", date=now_date)
 
 # 메모 작성 (완)
