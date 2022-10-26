@@ -34,9 +34,9 @@ def validate_token(token):
     #     return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     # else:
 
+# todo /// 메인 페이지 토큰 검증 제대로 작동하지 않음!
 @app.route('/')
 def home():
-    ### api로 서버로 요청받았을때 토큰 검증 양식
     token = request.cookies.get('mytoken')
     if validate_token(token) == '토큰만료' or '유효하지않은토큰':
         return render_template("sign_in.html", title="정글 다이어리")
