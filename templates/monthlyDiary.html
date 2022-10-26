@@ -2,6 +2,7 @@
 {% block title %}{{title}}{% endblock %}
 {% block cdns %}
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 {% endblock %}
 {% block style %}
 <style>
@@ -331,7 +332,10 @@ $(document).on('click', '.date-picker', function() {
     $("#modal").addClass('is-active');
 
     // 일기정보 가져오기
-    $.ajax()
+    $.ajax({
+        type: "GET",
+        url: "",
+    });
 
     // 모달 일기 리스트 html
     let getDiaryListhtml = `
@@ -341,12 +345,12 @@ $(document).on('click', '.date-picker', function() {
             <div class="content">
                 <p>작성자 : 이충일</p>
                 <p>
-                    제목 : 오늘도 보람찬 하루였다. &nbsp
+                    제목 : 오늘도 보람찬 하루였다.&nbsp&nbsp&nbsp&nbsp
                     <span class="icon-text">
                         <span class="icon">
-                            <i class="fas fa-home"></i>
+                            <i class="far fa-thumbs-up"></i>
                         </span>
-                        <span>Home</span>
+                        <span>1</span>
                     </span>
                 </p> 
             </div>
