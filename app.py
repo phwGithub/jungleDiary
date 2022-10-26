@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from flask import Flask, request, render_template, jsonify, redirect, url_for
-import hashlib 
+import hashlib
 import jwt
 from datetime import datetime, timedelta
 
@@ -31,14 +31,14 @@ def render_sign_up():
 def render_sign_in():
     return render_template('sign_in.html')
 
-# 가입하기 
+# 가입하기
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
     result = db.user.find_one({'name':new_name})
 
-    # db에 이름이 이미 있는지 확인하기 
+    # db에 이름이 이미 있는지 확인하기
     if result is None:
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
         doc = {

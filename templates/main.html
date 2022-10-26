@@ -84,8 +84,8 @@
                 <p class = 'date'>20{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
             </div>
             <div class="memo_input_box">
-                <input class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
-                <button class="button is-info is-light memo_botton">메모하기!</button>
+                <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
+                <button onclick="appendMemo()" class="button is-info is-light memo_botton">메모하기!</button>
             </div>
             <div class="memos" id="memos">
                 <div class = 'box memo_content'>
@@ -100,3 +100,38 @@
     </div>
 </div>
 {% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        getMemos();
+    })
+    function appendMemo() {
+        /// memo_title과 memo_content가 모두 입력되었는지 확인한다.
+        /// memo_title, memo_content를 서버에 보내며 post, 성공 시 새로고침
+        let new_memo = $("#new_memo").val();
+        let appending_user = $.cookie("id");
+        if (new_memo){
+            $.ajax({
+                type: "POST",
+                url: "/api/appendMemo",
+                data: {'new_memo': new_memo,'appending_user':appending_user},
+                success: function (response) { // 성공하면
+                    if (response["result"] === "success") {
+                        getMemos();
+                    }
+                    else {
+                        alert("서버 오류!");
+                    }
+                }
+            })
+        }
+        else {
+            alert('메모 내용을 입력해주세요')
+        }
+    }
+
+
+</script>
+{% endblock %}
+
