@@ -59,9 +59,10 @@ def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
     result = db.user.find_one({'name': new_name})
-    print("여기")
     # db에 이름이 이미 있는지 확인하기
-    if result is None:
+    if result is not None:
+        return jsonify({'result': 'fail', 'msg': '동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
+    else:
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
         doc = {
             "name": new_name,
@@ -69,8 +70,6 @@ def sign_up():
         }
         db.user.insert_one(doc)
         return jsonify({'result': 'success', 'msg': 'DB에 유저 등록 완료'})
-    else:
-        return jsonify({'result': 'fail', 'msg': '동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
 # 로그인하기
 @app.route('/sign_in', methods=['POST'])
