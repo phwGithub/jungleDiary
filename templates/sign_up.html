@@ -51,7 +51,7 @@
             return;
         }
 
-        console.log('gi')
+        // console.log('gi')
 
         $.ajax({
             type: "POST",
@@ -65,7 +65,6 @@
                     let msg = response['msg']
                     console.log(msg)
                     alert("가입 성공!")
-                    // 회원가입 후 연결 될 페이지 todo
                     window.location.replace("/sign_in");
                 }
                 else {
@@ -97,14 +96,14 @@
         </div>
     </div>
 
-    <div class="field">
+    <div class="field signup">
         <div class="control">
             <input class="input is-danger" id="pwd_chck" type="password" placeholder="비밀번호 확인">
         </div>
     </div>
 
     <!-- 이 부분은 시간이 있으면 
-        <div class="field">
+        <div class="field signup">
             <div class="control">
                 <div class="select">
                     <select>
@@ -120,15 +119,15 @@
         </div> -->
 
     <!-- 이 부분은 시간이 있으면
-        <div class="field">
+        <div class="field signup">
             <div class="control">
                 <input class="input is-danger" type="text" placeholder="질문에 대한 답변을 입력해주세요">
             </div>
         </div> -->
 
-    <div class="field is-grouped">
+    <div class="field signup is-grouped">
         <div class="control">
-            <button class="button signup is-success" onclick="sign_up()">가입하기</button>
+            <button class="button signup is-primary" onclick="sign_up()">가입하기</button>
         </div>
     </div>
 </div>
