@@ -36,11 +36,11 @@ def validate_token(token):
 def home():
     token = request.cookies.get('mytoken')
     if (validate_token(token) == '토큰만료') or (validate_token(token) == '유효하지않은토큰'):
-        return render_template("sign_in.html")
+        return render_template("sign_in.html", title="정글 다이어리")
     else:
         date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
         now_date = date.split(' ')
-        return render_template('main.html', date=now_date)
+        return render_template('main.html', title="오늘의 메모", date=now_date)
 
 
 # 회원가입 페이지로 이동
@@ -283,7 +283,7 @@ def updateDiary():
         db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_date':update_diary_time}})
     return jsonify({'result': 'success'})
 
-# 메모 삭제
+# 일기 삭제
 @app.route('/api/deleteDiary', methods=['post'])
 def deleteDiary():
     token = request.cookies.get('mytoken')
@@ -294,6 +294,19 @@ def deleteDiary():
     else:
         delete_diary_id = request.form['delete_diary_id']
         db.diary.delete_one({'_id': ObjectId(delete_diary_id)})
+        return jsonify({'result': 'success'})
+
+# 일기 좋아요
+@app.route('/api/likeDiary', methods=['post'])
+def likeDiary():
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        like_diary_id = request.form['like_diary_id']
+        db.diary.update_one({'_id':ObjectId(like_diary_id)},{'$inc':{'likes': 1}})
         return jsonify({'result': 'success'})
 
 # nav바 로그인 상태 체크하기

@@ -519,6 +519,34 @@ $(document).on('click','#modalDelete', function() {
     });
 });
 
+// 일기 좋아요! 버튼 클릭
+$(document).on('click','#modalDiaryLikes', function() {
+    let diaryId = $("#diaryHiddenId").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/likeDiary",
+        data: {"like_diary_id" : diaryId},
+        success: function(response) {
+            if(response["result"] == "success") {
+                swal("성공", "이 일기가 좋아요!.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
+            } else if(response.result =='fail'){
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
+            } else {
+                swal("오류", "서버 오류!", "error");
+            }
+        }
+    });
+});
+
 // 일기 리스트에서 일기 클릭 이벤트
 $(document).on('click','.modalDiary', function() {
     // 모달 일기 작성 html
