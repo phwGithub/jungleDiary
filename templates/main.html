@@ -288,6 +288,7 @@
                 }
                 else {
                     swal("오류","서버 오류!", "error");
+                }
             }
         })
     }
@@ -319,6 +320,10 @@
                 }
                 else {
                     swal("오류","서버 오류!", "error");
+                }
+            }
+        })
+    }
     function updateMemo(update_memo_id,memo_num) {
         let update_memo = $('#memo_input'+memo_num).val()
         $.ajax({
@@ -381,4 +386,3 @@
     }
 </script>
 {% endblock %}
-
