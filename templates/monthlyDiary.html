@@ -366,7 +366,7 @@ $(document).on('click','.delete', function() {
     $("#modal").removeClass('is-active');
 });
 
-// 일기 수정
+// 일기 수정 버튼 클릭
 $(document).on('click','#modalModify', function() {
     $("#modalDiaryTitle").attr("disabled", false);
     $("#modalDiaryContent").attr("disabled", false);
@@ -375,7 +375,7 @@ $(document).on('click','#modalModify', function() {
     modalButtonControl("modalModifyConfirmClick");
 });
 
-// 일기추가 창
+// 일기추가 버튼 클릭
 $(document).on('click','#modalAdd', function() {
     // 모달 일기 작성 html
     let writeDiaryhtml = `
@@ -393,7 +393,7 @@ $(document).on('click','#modalAdd', function() {
     modalButtonControl("modalAddClick"); 
 });
 
-// 일기추가
+// 일기작성 버튼 클릭
 $(document).on('click','#modalDiaryAdd', function() {
     let new_diary_title = $("#modalDiaryTitle").val();
     let new_diary_content = $("#modalDiaryContent").val();
@@ -419,7 +419,7 @@ $(document).on('click','#modalDiaryAdd', function() {
     })
 });
 
-// 일기수정
+// 일기수정완료 버튼 클릭
 $(document).on('click','#modalModifyConfirm', function() {
     let diaryId = $("#diaryHiddenId").val();
     let diaryTitle = $("#modalDiaryTitle").val();
@@ -443,7 +443,7 @@ $(document).on('click','#modalModifyConfirm', function() {
     });
 });
 
-// 일기삭제
+// 일기삭제버튼 클릭
 $(document).on('click','#modalDelete', function() {
     let diaryId = $("#diaryHiddenId").val();
 

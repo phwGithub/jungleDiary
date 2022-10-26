@@ -230,7 +230,7 @@ def getDiary():
     else:
         get_diary_user = validate_token(token)['id']
         get_diary_date = request.args.get('get_diary_date')
-        diary = db.diary.find({'writer': get_diary_user, 'fixed_date': get_diary_date}).sort('fixed_time', 1)
+        diary = db.diary.find({'user': get_diary_user, 'fixed_date': get_diary_date}).sort('fixed_time', 1)
         get_diary_list = dumps(diary)
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
 
