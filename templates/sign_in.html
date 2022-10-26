@@ -33,7 +33,7 @@
             alert(msg);
         }
     });
-    
+
     function sign_in() {
         let username = $("#input-username").val()
         let password = $("#input-password").val()
@@ -96,9 +96,7 @@
     </div>
     <div class="field loginpage">
         <div class="control">
-            <div class="button is-primary loginpage">
-                <a href='/sign_up' style='color: white; font-weight: bold;'>회원가입하기</a>
-            </div>
+            <button type="button" class="button is-primary loginpage" onClick="location.href='/sign_up'" style='color: white; font-weight: bold;'>회원가입하기</button>                
         </div>
     </div>
 </div>
