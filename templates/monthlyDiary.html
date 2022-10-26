@@ -167,6 +167,7 @@ body {
           </section>
           <footer class="modal-card-foot buttons is-right">
             <button class="button is-success" id="modalModify">수정</button>
+            <button class="button is-success" id="modalModifyConfirm">수정완료</button>
             <button class="button is-danger" id="modalDelete">삭제</button>
             <button class="button is-primary" id="modalAdd">일기추가</button>
             <button class="button is-primary" id="modalDiaryAdd">일기작성</button>
@@ -329,6 +330,9 @@ $(document).on('click', '.date-picker', function() {
     year = $(this).attr("data-year");
     $("#modal").addClass('is-active');
 
+    // 일기정보 가져오기
+    $.ajax()
+
     // 모달 일기 리스트 html
     let getDiaryListhtml = `
     <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
@@ -336,7 +340,15 @@ $(document).on('click', '.date-picker', function() {
         <div class="card-content">
             <div class="content">
                 <p>작성자 : 이충일</p>
-                <p>제목 : 오늘도 보람찬 하루였다.</p>
+                <p>
+                    제목 : 오늘도 보람찬 하루였다. &nbsp
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-home"></i>
+                        </span>
+                        <span>Home</span>
+                    </span>
+                </p> 
             </div>
         </div>
     </div>
@@ -351,15 +363,23 @@ $(document).on('click', '.date-picker', function() {
     `
 
     $(".modal-card-body").html(getDiaryListhtml);
-    $("#modalModify").css("display", "none");
-    $("#modalDelete").css("display", "none");
-    $("#modalDiaryAdd").css("display", "none");
-    $("#modalAdd").css("display", "block");
+
+    //modal 버튼 제어
+    modalButtonControl("date-pickerClick");
 });
 
 // 모달창 닫기
 $(document).on('click','.delete', function() {
     $("#modal").removeClass('is-active');
+});
+
+// 일기 수정
+$(document).on('click','#modalModify', function() {
+    $("#modalDiaryTitle").attr("disabled", false);
+    $("#modalDiaryContent").attr("disabled", false);
+
+    //modal 버튼 제어
+    modalButtonControl("modalModifyConfirmClick");
 });
 
 // 일기추가
@@ -368,18 +388,16 @@ $(document).on('click','#modalAdd', function() {
     let writeDiaryhtml = `
     <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
     <span class="block is-size-4"><strong>제목</strong></span>
-    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
+    <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" placeholder="제목을 입력해주세요">
     <span class="block is-size-4 yb-6"><strong>내용</strong></span>
-    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
+    <textarea class="textarea mt-2 is-medium" id="modalDiaryContent" placeholder="내용을 입력해주세요." rows="11"></textarea>
     `;
 
     $(".modal-card-body").html("");
     $(".modal-card-body").html(writeDiaryhtml);
     
-    $("#modalModify").css("display", "none");
-    $("#modalDelete").css("display", "none");
-    $("#modalDiaryAdd").css("display", "block");
-    $("#modalAdd").css("display", "none");
+    //modal 버튼 제어
+    modalButtonControl("modalAddClick"); 
 });
 
 // 일기 리스트에서 일기 클릭 이벤트
@@ -388,20 +406,55 @@ $(document).on('click','.modalDiary', function() {
     let writeDiaryhtml = `
     <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
     <span class="block is-size-4"><strong>제목</strong></span>
-    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
+    <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" value="테스트 제목" disabled>
     <span class="block is-size-4 yb-6"><strong>내용</strong></span>
-    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
+    <textarea class="textarea mt-2 is-medium" id="modalDiaryContent" rows="10" disabled>테스트 내용</textarea>
     `;
-    
+
     $(".modal-card-body").html("");
     $(".modal-card-body").html(writeDiaryhtml);
     
-    $("#modalModify").css("display", "block");
-    $("#modalDelete").css("display", "block");
-    $("#modalDiaryAdd").css("display", "none");
-    $("#modalAdd").css("display", "none");
+    //modal 버튼 제어
+    modalButtonControl("modalDiaryClick");
 });
 
+function modalButtonControl(flag) {
+    if(flag == "date-pickerClick") {
+        $("#modalModify").css("display", "none");
+        $("#modalModifyConfirm").css("display", "none");
+        $("#modalDelete").css("display", "none");
+        $("#modalDiaryAdd").css("display", "none");
+        $("#modalAdd").css("display", "block");
+        return;
+    }
+
+    if(flag == "modalModifyConfirmClick") {
+        $("#modalModify").css("display", "none");
+        $("#modalModifyConfirm").css("display", "block");
+        $("#modalDelete").css("display", "none");
+        $("#modalDiaryAdd").css("display", "none");
+        $("#modalAdd").css("display", "none");
+        return;
+    }
+
+    if(flag == "modalAddClick") {
+        $("#modalModify").css("display", "none");
+        $("#modalModifyConfirm").css("display", "none");
+        $("#modalDelete").css("display", "none");
+        $("#modalDiaryAdd").css("display", "block");
+        $("#modalAdd").css("display", "none");
+        return;
+    }
+
+    if(flag == "modalDiaryClick") {
+        $("#modalModify").css("display", "block");
+        $("#modalModifyConfirm").css("display", "none");
+        $("#modalDelete").css("display", "block");
+        $("#modalDiaryAdd").css("display", "none");
+        $("#modalAdd").css("display", "none");
+        return;
+    }
+}
 /* 달력 이벤트 end */
 </script>
 {% endblock %}
