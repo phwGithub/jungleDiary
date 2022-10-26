@@ -2,7 +2,7 @@ import time
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from flask import Flask, request, render_template, jsonify, redirect, url_for
+from flask import Flask, request, render_template, jsonify
 import hashlib
 import jwt
 from datetime import datetime, timedelta
