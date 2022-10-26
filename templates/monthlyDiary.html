@@ -16,7 +16,7 @@ html {
 
 body {
     margin: 0;
-    background: #504f4f;
+    background: white;
     font-size: 1em;
 }
 
@@ -31,15 +31,19 @@ body {
     max-width: 1100px;
     margin: 0 auto;
     overflow: auto;
+    /* border: solid 1px; */
+    border-color: gray;
+    border-radius: 30px;
+    box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 2%);
 }
 
 .button-container-calendar button {
     cursor: pointer;
     display: inline-block;
     zoom: 1;
-    background: #00a2b7;
-    color: #fff;
-    border: 1px solid #0aa2b5;
+    background: white;
+    color: #00d67a;
+    border: 1px solid #00d67a;
     border-radius: 4px;
     padding: 5px 10px;
 }
@@ -92,10 +96,14 @@ body {
 
 #previous {
     float: left;
+    width: 41px;
+    height: 39px;
 }
 
 #next {
     float: right;
+    width: 41px;
+    height: 39px;
 }
 
 .footer-container-calendar {
@@ -128,8 +136,8 @@ body {
         <h3 id="monthAndYear"></h3>
         
         <div class="button-container-calendar">
-            <button id="previous" onclick="previous()">&#8249;</button>
-            <button id="next" onclick="next()">&#8250;</button>
+            <button id="previous" onclick="previous()"><i class="fas fa-less-than"></i></button>
+            <button id="next" onclick="next()"><i class="fas fa-greater-than"></i></button>
         </div>
         
         <table class="table-calendar" id="calendar" data-lang="en">
