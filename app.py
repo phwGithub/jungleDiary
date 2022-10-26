@@ -179,14 +179,19 @@ def updateMemo():
 # 일기 작성
 @app.route('/api/appendDiary', methods=['post'])
 def appendDiary():
-    new_diary_user = request.form['new_diary_user']
-    new_diary_title = request.form['new_diary_title']
-    new_diary_content = request.form['new_diary_content']
-    new_diary_date = request.form['new_diary_date']
-    new_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
-    db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,
-                        'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
-    return jsonify({'result': 'success'})
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        new_diary_user = validate_token(token)['id']
+        new_diary_title = request.form['new_diary_title']
+        new_diary_content = request.form['new_diary_content']
+        new_diary_date = request.form['new_diary_date']
+        new_diary_time = int(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
+        db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
+        return jsonify({'result': 'success'})
 
 # 일기 불러오기
 @app.route('/api/getDiary', methods=['get'])
