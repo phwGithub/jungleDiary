@@ -16,6 +16,15 @@ SECRET_KEY = 'KRAFTONJUNGLE'
 client = MongoClient('localhost', 27017)
 db = client.jgDiary
 
+def validate_token(token):
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms='HS256')
+    except jwt.ExpiredSignatureError:
+        return '토큰만료'
+    except jwt.InvalidTokenError:
+        return '유효하지않은토큰'
+    else:
+        return decoded
 
 @app.route('/')
 def home():
@@ -38,7 +47,7 @@ def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
     result = db.user.find_one({'name': new_name})
-
+    print("여기")
     # db에 이름이 이미 있는지 확인하기
     if result is None:
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
@@ -96,8 +105,10 @@ def showEveryDiary():
 # 메모 작성
 @app.route('/api/appendMemo', methods=['post'])
 def appendMemos():
-    appending_user = request.form['appending_user']
+    appending_user = request.cookies.get('mytoken')
     new_memo = request.form['new_memo']
+    print(appending_user)
+    validate_token(appending_user)
     new_memo_date = request.form['new_memo_date']
     new_memo_time = int(time.strftime('%H%M%S', time.localtime(time.time())))
     db.memos.insert_one({'user': appending_user, 'content': new_memo,
@@ -105,12 +116,11 @@ def appendMemos():
     return jsonify({'result': 'success'})
 
 # 메모 불러오기
-@app.route('/api/getMemos', methods=['get'])
+@app.route('/api/getMemos', methods=['post'])
 def getMemos():
-    memo_user = request.form['memo_user']
     memo_date = request.form['memo_date']
-    memos = db.memos.find(
-        {'user': memo_user, 'date': memo_date}).sort('time', 1)
+    memo_user = request.cookies.get('id')
+    memos = db.memos.find({'user': memo_user, 'date': memo_date}).sort('time', 1)
     user_memos = dumps(memos)
     return jsonify({'result': 'success', 'user_memos': user_memos})
 

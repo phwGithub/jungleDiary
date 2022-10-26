@@ -4,6 +4,7 @@
 {% block cdns %}
         <!-- Required meta tags -->
         <meta charset="utf-8">
+
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Bootstrap bulma -->
@@ -14,6 +15,8 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
             integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
             crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
 {% endblock %}
 
 
@@ -88,13 +91,7 @@
                 <button onclick="appendMemo()" class="button is-info is-light memo_botton">메모하기!</button>
             </div>
             <div class="memos" id="memos">
-                <div class = 'box memo_content'>
-                    <p class="memo_text">백준을 풀었다</p>
-                    <button class="button is-warning is-light edit_delete_botton">수정</button>
-                    <button class="button is-danger is-light edit_delete_botton">삭제</button>
-                </div>
-                <div class = 'box memo_content'>
-                </div>
+
             </div>
         </div>
     </div>
@@ -103,22 +100,56 @@
 
 {% block script %}
 <script>
-    $(document).ready(function () {
+    let date_now = '{{date[0]}}-{{date[1]}}-{{date[2]}}'
+        $(document).ready(function () {
         getMemos();
     })
     function getMemos() {
-        
+        $("#memos").html("");
+        $.ajax({
+            type: "post",
+            url: "/api/getMemos",
+            data: {'memo_date':date_now},
+            success: function (response) {
+                if (response.result === "success") {
+                    ///다른 액션 시에 input박스들 비우기
+                    $("#new_memo").val("")
+                    let memos_dumps = response['user_memos'];
+                    let user_memos = JSON.parse(memos_dumps);
+                    for (let i = 0; i<memos.length; i++) {
+                        show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
+                    }
+                }
+                else {
+                    alert('오류발생')
+                }
+            }
+        })
     }
+    function show_memos(memo_num ,memo_content, memo_id) {
+        /// link-like, 삭제는 함수&api를 만들어서 해당 버튼 누를때 id를 서버로 보내며 post한다
+        /// card_num은 통해 수정버튼을 누를 시에 수정되는 카드의 id를 특정하기 위해 만든 변수로
+        /// 패이지가 load 될때 card가 추가되면서 0부터 1씩 커지며 부여된다.
+        /// 수정버튼을 누를 때 기존의 제목과 내용, card_num, 메모의db_id를 변수로 입력한다
+        let memo_html = `<div id ='memo${memo_num}'class = 'box memo_content'>
+    <p class="memo_text">${memo_text}</p>
+    <button onclick='editMemo(${memo_id})' class="button is-warning is-light edit_delete_botton">수정</button>
+    <button onclick='deleteMemo(${memo_id})' class="button is-danger is-light edit_delete_botton">삭제</button>
+</div>`
+        $("#card-list").append(card_html)
+    }
+
+
+
     function appendMemo() {
         /// memo_title과 memo_content가 모두 입력되었는지 확인한다.
         /// memo_title, memo_content를 서버에 보내며 post, 성공 시 새로고침
         let new_memo = $("#new_memo").val();
-        let appending_user = $.cookie("id");
         if (new_memo){
             $.ajax({
                 type: "POST",
                 url: "/api/appendMemo",
-                data: {'new_memo': new_memo,'appending_user':appending_user},
+                data: {'new_memo': new_memo},
                 success: function (response) { // 성공하면
                     if (response["result"] === "success") {
                         getMemos();
