@@ -208,7 +208,7 @@ def updateDiary():
     db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_time':update_diary_time}})
     return jsonify({'result': 'success'})
 
-# todo // 로그인 상태 체크하기
+# nav바 로그인 상태 체크하기
 @app.route('/login_check', methods=['GET'])
 def loginCheck():
     token = request.cookies.get('mytoken')
