@@ -87,7 +87,7 @@
                 <h1 class="title">오늘의 메모</h1>
             </div>
             <div>
-                <p class = 'date'>20{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
+                <p class = 'date'>{{date[0]}}. {{date[1]}}. {{date[2]}}. {{date[3]}}</p>
             </div>
             <div class="memo_input_box">
                 <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
@@ -104,8 +104,8 @@
 {% block script %}
 <script>
     let date_now = '{{date[0]}}{{date[1]}}{{date[2]}}'
-        $(document).ready(function () {
-        getMemos();
+    $(document).ready(function () {
+    getMemos();
     })
     function getMemos() {
         $("#memos").html("");
@@ -123,12 +123,16 @@
                         show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
                     }
                 }
+                else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+                }
                 else {
-                    alert('오류발생')
+                    alert('서버오류')
                 }
             }
         })
-    }
+    };
     function show_memos(memo_num ,memo_content, memo_id) {
         let memo_html = `<div id ='memo${memo_num}'class = 'box memo_content'>
     <p class="memo_text">${memo_content}</p>
@@ -177,13 +181,48 @@
             }
         })
     }
-    function editMemoInput(memo_id, memo_content,memo_num) {
-        /// onclick -> card_num을 이용하여 해당 박스를 특정하고 html을 수정한다
-        let edit_html = `<input id='memo_input${memo_num}' class="memo_text is-focused memo_eidt"></input>
-                    <button onclick='editMemo(${memo_id})' class="button is-link is-light edit_delete_botton">완료</button>`
-        $('#memo'+memo_num).html("");
-        $('#memo'+memo_num).append(edit_html);
-        $('#memo_input'+memo_num).val(memo_content)
+    async function editMemoInput(memo_id, memo_content,memo_num) {
+        $("#memos").html("");
+        $.ajax({
+            type: "get",
+            url: "/api/getMemos",
+            data: {},
+            success: function (response) {
+                if (response.result === "success") {
+                    ///다른 액션 시에 input박스들 비우기
+                    $("#new_memo").val("")
+                    let memos_dumps = response['user_memos'];
+                    let user_memos = JSON.parse(memos_dumps);
+                    for (let i = 0; i<user_memos.length; i++) {
+                        show_memos(i,user_memos[i]['content'],user_memos[i]['_id']['$oid']);
+                    }
+                    let edit_html = `<input id='memo_input${memo_num}' class="memo_text is-focused memo_eidt"></input>
+                    <button onclick='updateMemo("${memo_id}",${memo_num})' class="button is-link is-light edit_delete_botton">완료</button>`
+                    $('#memo'+memo_num).html("");
+                    $('#memo'+memo_num).append(edit_html);
+                    $('#memo_input'+memo_num).val(memo_content);
+                }
+                else {
+                    alert('오류발생')
+                }
+            }
+        })
+    }
+    function updateMemo(update_memo_id,memo_num) {
+        let update_memo = $('#memo_input'+memo_num).val()
+        $.ajax({
+            type: "POST",
+            url: "/api/updateMemo",
+            data: {'update_memo_id':update_memo_id,'update_memo': update_memo},
+            success: function (response) {
+                if (response["result"] === "success") {
+                    getMemos();
+                }
+                else {
+                    alert("서버 오류!");
+                }
+            }
+        })
     }
 
 </script>
