@@ -192,7 +192,8 @@ def appendDiary():
         db.diary.insert_one({'user': new_diary_user, 'title': new_diary_title,'content': new_diary_content, 'fixed_date': new_diary_date, 'update_time': new_diary_time})
         return jsonify({'result': 'success'})
 
-# 일기 불러오기
+
+# 일기 불러오기 아래 주석에 사용 법
 @app.route('/api/getDiary', methods=['get'])
 def getDiary():
     ## api로 서버로 요청받았을때 토큰 검증 양식
@@ -206,9 +207,30 @@ def getDiary():
         get_diary_date = request.args.get('get_diary_date')
         diary = db.diary.find({'writer': get_diary_user, 'fixed_date': get_diary_date}) #.sort('fixed_time', 1)
         get_diary_list = dumps(diary)
-    
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
+# function appendDiary(date) {
+#     memo_wrtie_form();
+#     let new_diary_title = $('#diary_title').val();
+#     let new_diary_content = $('#diary_content').val();
+#     $.ajax({
+#         type: "POST",
+#         url: "/api/appendDiary",
+#         data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':date},
+#         success: function (response) {
+#             if (response["result"] === "success") {
+#                 getMemos();
+#             }
+#             else if(response.result =='fail'){
+#                 alert(response['msg']);
+#                 window.location.replace("/sign_in");
+#             }
+#             else {
+#                 alert("서버 오류!");
+#             }
+#         }
+#     })
 
+# }
 
 # 일기 수정
 @app.route('/api/updateDiary', methods=['post'])
