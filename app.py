@@ -13,9 +13,6 @@ db = client.jgDiary
 
 SECRET_KEY = 'KRAFTONJUNGLE'
 
-client = MongoClient('localhost', 27017)
-db = client.jgDiary
-
 def validate_token(token):
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms='HS256')
