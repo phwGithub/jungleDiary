@@ -3,6 +3,7 @@
 {% block cdns %}
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 {% endblock %}
 {% block style %}
 <style>
@@ -161,7 +162,7 @@ body {
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">나의 일기</p>
+            <p class="modal-card-title">{{title}}</p>
             <button class="delete" aria-label="close"></button>
           </header>
           <section class="modal-card-body">
@@ -172,6 +173,7 @@ body {
             <button class="button is-danger" id="modalDelete">삭제</button>
             <button class="button is-primary" id="modalAdd">일기추가</button>
             <button class="button is-primary" id="modalDiaryAdd">일기작성</button>
+            <button class="button is-link" id="modalDiaryLikes">좋아요!</button>
           </footer>
         </div>
     </div>
@@ -179,6 +181,9 @@ body {
 {% endblock %}
 {% block script %}
 <script>
+let title = "{{title}}";
+let myId = "{{mytoken['id']}}"
+
 /* 달력 출력 Start */
 function generate_year_range(start, end) {
     var years = "";
@@ -233,7 +238,7 @@ for (dhead in days) {
 }
 $dataHead += "</tr>";
 
-//alert($dataHead);
+
 document.getElementById("thead-month").innerHTML = $dataHead;
 
 
@@ -334,28 +339,61 @@ $(document).on('click', '.date-picker', function() {
     
     $("#modal").addClass('is-active');
 
+
     // 일기정보 가져오기
     $(".modal-card-body").html("");
-    $.ajax({
-        type: "GET",
-        url: "/api/getDiary",
-        data: {"get_diary_date" : year + month + date},
-        success: function(response) {
-            if (response["result"] === "success") {
-                let diaryList = JSON.parse(response["get_diary_list"])
-                console.log(diaryList);
-                $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
-                diaryList.forEach(element => {
-                    showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
-                });
-            }else if(response.result =='fail'){
-                    alert(response['msg']);
-                    window.location.replace("/sign_in");
-            } else {
-                alert("서버 오류!");
+
+    if(title == "나의 일기") {
+        $.ajax({
+            type: "GET",
+            url: "/api/getDiary",
+            data: {"get_diary_date" : year + month + date},
+            success: function(response) {
+                if (response["result"] === "success") {
+                    let diaryList = JSON.parse(response["get_diary_list"])
+                    $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                    if(diaryList.length == 0) {
+                        $(".modal-card-body").append(`<p class="has-text-centered is-size-5 mt-6 mb-6">작성한 일기가 없습니다.</p>`);
+                        return;
+                    }
+                    diaryList.forEach(element => {
+                        showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
+                    });
+                    
+                }else if(response.result =='fail'){
+                        swal("토큰 오류", response['msg'], "error");
+                        window.location.replace("/sign_in");
+                } else {
+                    swal("토큰 오류", "서버 오류!", "error");
+                }
             }
-        }
-    });
+        });
+    } else {
+        $.ajax({
+            type: "GET",
+            url: "/api/getEveryDiary",
+            data: {"get_diary_date" : year + month + date},
+            success: function(response) {
+                if (response["result"] === "success") {
+                    let diaryList = JSON.parse(response["get_diary_list"])
+                    $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
+                    if(diaryList.length == 0) {
+                        $(".modal-card-body").append(`<p class="has-text-centered is-size-5 mt-6 mb-6">작성한 일기가 없습니다.</p>`);
+                        return;
+                    }
+                    diaryList.forEach(element => {
+                        showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
+                    });
+                }else if(response.result =='fail'){
+                    swal("오류", response['msg'], "error").then(function() {
+                        window.location.replace("/sign_in");
+                    });
+                } else {
+                    swal("오류", "서버 오류!", "error");
+                }
+            }
+        });
+    }
 
     //modal 버튼 제어
     modalButtonControl("date-pickerClick");
@@ -405,15 +443,19 @@ $(document).on('click','#modalDiaryAdd', function() {
         data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':new_diary_date},
         success: function (response) {
             if (response["result"] === "success") {
-                alert("일기가 추가되었습니다.");
-                window.location.replace("/showMyDiary");
-            }
-            else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
-            }
-            else {
-                alert("서버 오류!");
+                swal("성공", "일기가 추가되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
+            } else if(response.result =='fail'){
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
+            } else {
+                swal("오류", "서버 오류!", "error");
             }
         }
     })
@@ -431,13 +473,19 @@ $(document).on('click','#modalModifyConfirm', function() {
         data: {"update_diary_id" : diaryId, "update_diary_title" : diaryTitle, "update_diary_content" : diaryContent},
         success: function(response) {
             if(response["result"] == "success") {
-                alert("수정이 완료되었습니다.");
-                window.location.replace("/showMyDiary");
+                swal("성공", "수정이 완료되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
             } else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
             } else {
-                alert("서버오류!");
+                swal("오류", "서버 오류!", "error");
             }
         }
     });
@@ -453,13 +501,47 @@ $(document).on('click','#modalDelete', function() {
         data: {"delete_diary_id" : diaryId},
         success: function(response) {
             if(response["result"] == "success") {
-                alert("삭제가 완료되었습니다.");
-                window.location.replace("/showMyDiary");
+                swal("성공", "삭제가 완료되었습니다.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
             } else if(response.result =='fail'){
-                alert(response['msg']);
-                window.location.replace("/sign_in");
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
             } else {
-                alert("서버오류!");
+                swal("오류", "서버 오류!", "error");
+            }
+        }
+    });
+});
+
+// 일기 좋아요! 버튼 클릭
+$(document).on('click','#modalDiaryLikes', function() {
+    let diaryId = $("#diaryHiddenId").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/likeDiary",
+        data: {"like_diary_id" : diaryId},
+        success: function(response) {
+            if(response["result"] == "success") {
+                swal("성공", "이 일기가 좋아요!.", "success").then(function() {
+                    if(title == "나의 일기") {
+                        window.location.replace("/showMyDiary");
+                    } else {
+                        window.location.replace("/showEveryDiary");
+                    }
+                });
+            } else if(response.result =='fail'){
+                swal("오류", response['msg'], "error").then(function() {
+                    window.location.replace("/sign_in");
+                });
+            } else {
+                swal("오류", "서버 오류!", "error");
             }
         }
     });
@@ -487,7 +569,12 @@ $(document).on('click','.modalDiary', function() {
     $(".modal-card-body").html(writeDiaryhtml);
     
     //modal 버튼 제어
-    modalButtonControl("modalDiaryClick");
+    if(writer != myId) {
+        modalButtonControl("modalNotMyDiaryClick");
+    } else {
+        modalButtonControl("modalDiaryClick");
+    }
+    
 });
 
 function modalButtonControl(flag) {
@@ -497,6 +584,7 @@ function modalButtonControl(flag) {
         $("#modalDelete").css("display", "none");
         $("#modalDiaryAdd").css("display", "none");
         $("#modalAdd").css("display", "block");
+        $("#modalDiaryLikes").css("display", "none");
         return;
     }
 
@@ -506,6 +594,7 @@ function modalButtonControl(flag) {
         $("#modalDelete").css("display", "none");
         $("#modalDiaryAdd").css("display", "none");
         $("#modalAdd").css("display", "none");
+        $("#modalDiaryLikes").css("display", "none");
         return;
     }
 
@@ -515,6 +604,7 @@ function modalButtonControl(flag) {
         $("#modalDelete").css("display", "none");
         $("#modalDiaryAdd").css("display", "block");
         $("#modalAdd").css("display", "none");
+        $("#modalDiaryLikes").css("display", "none");
         return;
     }
 
@@ -524,6 +614,17 @@ function modalButtonControl(flag) {
         $("#modalDelete").css("display", "block");
         $("#modalDiaryAdd").css("display", "none");
         $("#modalAdd").css("display", "none");
+        $("#modalDiaryLikes").css("display", "none");
+        return;
+    }
+
+    if(flag == "modalNotMyDiaryClick") {
+        $("#modalModify").css("display", "none");
+        $("#modalModifyConfirm").css("display", "none");
+        $("#modalDelete").css("display", "none");
+        $("#modalDiaryAdd").css("display", "none");
+        $("#modalAdd").css("display", "none");
+        $("#modalDiaryLikes").css("display", "block");
         return;
     }
 }

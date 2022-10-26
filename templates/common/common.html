@@ -9,7 +9,8 @@
     integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-  <title>{% block title %}{% endblock %}</title>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <title>정글다이어리 | {% block title %}{% endblock %}</title>
   {% block cdns %}{% endblock %}
 
   <style>
@@ -44,19 +45,20 @@
     // 로그아웃
     function signOut() {
       $.removeCookie('mytoken', { path: '/' });
-      alert("로그아웃 성공")
-      $('#user-info').empty()
-      let temp_html =
+      swal("로그아웃", "로그아웃 성공", "info").then(function() {
+        $('#user-info').empty()
+        let temp_html =
+          `
+        <div class="buttons">
+              <a class="button is-primary" a href='/sign_up'>
+                <strong>회원가입</strong>
+              </a>
+              <a class="button is-light" a href='/sign_in'> 로그인 </a>
+            </div>
         `
-      <div class="buttons">
-            <a class="button is-primary" a href='/sign_up'>
-              <strong>회원가입</strong>
-            </a>
-            <a class="button is-light" a href='/sign_in'> 로그인 </a>
-          </div>
-      `
-      $('#user-info').append(temp_html)
-      window.location.href = '/';
+        $('#user-info').append(temp_html)
+        window.location.href = '/';
+      });
     }
 
   </script>

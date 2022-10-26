@@ -1,5 +1,5 @@
 {% extends '/common/common.html' %}
-{% block title %}{{title}}{% endblock %}
+{% block title %}로그인{% endblock %}
 {% block cdns %}
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
@@ -27,22 +27,31 @@
 {% endblock %}
 {% block script %}
 <script>
+    $(document).ready(function () {
+        let msg = "{{msg}}"
+        if(msg) {
+            swal("로그인 오류",msg, "error");
+        }
+    });
+
     function sign_in() {
         let username = $("#input-username").val()
         let password = $("#input-password").val()
 
         if (username == "") {
-            alert('아이디를 입력하세요!')
-            $("#input-username").focus()
+            swal("아이디 오류", '아이디를 입력하세요!', "error").then(function() {
+                $("#input-username").focus()
+            });
             return;
         }
 
         if (password == "") {
-            alert('비밀번호를 입력하세요!')
-            $("#input-password").focus()
+            swal("패스워드 오류",'비밀번호를 입력하세요!', "error").then(function() {
+                $("#input-password").focus()
+            });
             return;
         }
-        console.log('gi')
+
         $.ajax({
             type: "POST",
             url: "/sign_in",
@@ -54,10 +63,11 @@
                 if (response['result'] == 'success') {
                     $.cookie('mytoken', response['token'], { path: '/' });
                     let msg = response['msg']
-                    alert(msg)
-                    window.location.replace("/mainpage")
+                    swal("환영합니다!",msg,"success").then(function() {
+                        window.location.replace("/mainpage")                       
+                    })
                 } else {
-                    alert(response['msg'])
+                    swal("오류",response['msg'],"error")
                 }
             }
         });
@@ -89,9 +99,7 @@
     </div>
     <div class="field loginpage">
         <div class="control">
-            <div class="button is-primary loginpage">
-                <a href='/sign_up' style='color: white; font-weight: bold;'>회원가입하기</a>
-            </div>
+            <button type="button" class="button is-primary loginpage" onClick="location.href='/sign_up'" style='color: white; font-weight: bold;'>회원가입하기</button>                
         </div>
     </div>
 </div>

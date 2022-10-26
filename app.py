@@ -2,7 +2,7 @@ import time
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from flask import Flask, request, render_template, jsonify, redirect, url_for
+from flask import Flask, request, render_template, jsonify
 import hashlib
 import jwt
 from datetime import datetime, timedelta
@@ -12,9 +12,6 @@ client = MongoClient('localhost', 27017)  # 로컬연결
 db = client.jgDiary
 
 SECRET_KEY = 'KRAFTONJUNGLE'
-
-client = MongoClient('localhost', 27017)
-db = client.jgDiary
 
 def validate_token(token):
     try:
@@ -62,9 +59,10 @@ def sign_up():
     new_name = request.form['new_name_give']
     new_pwd = request.form['new_pwd_give']
     result = db.user.find_one({'name': new_name})
-    print("여기")
     # db에 이름이 이미 있는지 확인하기
-    if result is None:
+    if result is not None:
+        return jsonify({'result': 'fail', 'msg': '동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
+    else:
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
         doc = {
             "name": new_name,
@@ -72,8 +70,6 @@ def sign_up():
         }
         db.user.insert_one(doc)
         return jsonify({'result': 'success', 'msg': 'DB에 유저 등록 완료'})
-    else:
-        return jsonify({'result': 'fail', 'msg': '동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
 # 로그인하기
 @app.route('/sign_in', methods=['POST'])
@@ -95,26 +91,46 @@ def sign_in():
     else:   # result 못찾음
         return jsonify({'result': 'fail', 'msg': '가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.'})
 
-# HTML 화면 보여주기
+# 메인 화면 보여주기
 @app.route('/mainpage')
 def mainpage():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
     return render_template('main.html', title="오늘의 메모", date=now_date)
 
 # 나의 일기 보여주기
 @app.route('/showMyDiary')
 def showMyDiary():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
-    return render_template('monthlyDiary.html', title="나의 일기", date=now_date)
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        token = validate_token(token)
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
+    return render_template('monthlyDiary.html', title="나의 일기", date=now_date, mytoken=token)
 
 # 모두의 일기 보여주기
 @app.route('/showEveryDiary')
 def showEveryDiary():
-    date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
-    now_date = date.split(' ')
-    return render_template('monthlyDiary.html', title="모두의 일기", date=now_date)
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    elif validate_token(token) =='유효하지않은토큰':
+        return render_template('sign_in.html', msg="로그인이 필요합니다.")
+    else:
+        token = validate_token(token)
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
+    return render_template('monthlyDiary.html', title="모두의 일기", date=now_date, mytoken=token)
 
 # 메모 작성 (완)
 @app.route('/api/appendMemo', methods=['post'])
@@ -268,7 +284,7 @@ def updateDiary():
         db.diary.update_one({'_id':ObjectId(update_diary_id)},{'$set':{'title':update_diary_title,'content':update_diary_content,'update_date':update_diary_time}})
     return jsonify({'result': 'success'})
 
-# 메모 삭제
+# 일기 삭제
 @app.route('/api/deleteDiary', methods=['post'])
 def deleteDiary():
     token = request.cookies.get('mytoken')
@@ -279,6 +295,19 @@ def deleteDiary():
     else:
         delete_diary_id = request.form['delete_diary_id']
         db.diary.delete_one({'_id': ObjectId(delete_diary_id)})
+        return jsonify({'result': 'success'})
+
+# 일기 좋아요
+@app.route('/api/likeDiary', methods=['post'])
+def likeDiary():
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        like_diary_id = request.form['like_diary_id']
+        db.diary.update_one({'_id':ObjectId(like_diary_id)},{'$inc':{'likes': 1}})
         return jsonify({'result': 'success'})
 
 # nav바 로그인 상태 체크하기
