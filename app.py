@@ -252,6 +252,22 @@ def getDiary():
         get_diary_list = dumps(diary)
     return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
 
+# 월별 내 일기 불러오기
+@app.route('/api/getMyDiaries', methods=['get'])
+def getMyDiaries():
+    ## api로 서버로 요청받았을때 토큰 검증 양식
+    token = request.cookies.get('mytoken')
+    if validate_token(token) == '토큰만료':
+        return jsonify({'result': 'fail','msg':'토큰이 만료되었습니다!'})
+    elif validate_token(token) =='유효하지않은토큰':
+        return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
+    else:
+        get_diary_user = validate_token(token)['id']
+        get_diary_ym = request.args.get('get_diary_ym')
+        diary = db.diary.find({'user': get_diary_user, 'fixed_date' : {'$gte' : get_diary_ym+"01", '$lt' : get_diary_ym+"32"}}).sort('fixed_time', 1)
+        get_diary_list = dumps(diary)
+    return jsonify({'result': 'success', 'get_diary_list': get_diary_list})
+
 # 날짜별 모두의 일기 불러오기
 @app.route('/api/getEveryDiary', methods=['get'])
 def getEveryDiary():

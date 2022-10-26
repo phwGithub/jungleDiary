@@ -439,6 +439,20 @@ $(document).on('click','#modalDiaryAdd', function() {
     let new_diary_content = $("#modalDiaryContent").val();
     let new_diary_date = year + month + date;
 
+    if(new_diary_title == "") {
+        swal("오류", "제목을 입력해주세요.","error").then(function() {
+            $("#modalDiaryTitle").focus();
+        });
+        return;
+    }
+
+    if(new_diary_content == "") {
+        swal("오류", "내용을 입력해주세요.","error").then(function() {
+            $("#modalDiaryContent").focus();
+        });
+        return;
+    }
+
     $.ajax({
         type: "POST",
         url: "/api/appendDiary",
@@ -468,6 +482,20 @@ $(document).on('click','#modalModifyConfirm', function() {
     let diaryId = $("#diaryHiddenId").val();
     let diaryTitle = $("#modalDiaryTitle").val();
     let diaryContent = $("#modalDiaryContent").val();
+
+    if(diaryTitle == "") {
+        swal("오류", "제목을 입력해주세요.","error").then(function() {
+            $("#modalDiaryTitle").focus();
+        });
+        return;
+    }
+
+    if(diaryContent == "") {
+        swal("오류", "내용을 입력해주세요.","error").then(function() {
+            $("#modalDiaryContent").focus();
+        });
+        return;
+    }
 
     $.ajax({
         type: "POST",
