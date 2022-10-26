@@ -169,6 +169,7 @@ body {
             <button class="button is-success" id="modalModify">수정</button>
             <button class="button is-danger" id="modalDelete">삭제</button>
             <button class="button is-primary" id="modalAdd">일기추가</button>
+            <button class="button is-primary" id="modalDiaryAdd">일기작성</button>
           </footer>
         </div>
     </div>
@@ -315,25 +316,23 @@ function daysInMonth(iMonth, iYear) {
 }
 /* 달력 출력 End */
 
-/* 달력 클릭 이벤트 */
-$(document).on('click', '.date-picker', function() {
-    let date = $(this).attr("data-date");
-    let month = $(this).attr("data-month");
-    let year = $(this).attr("data-year");
+/* 달력 이벤트 start */
+// 선택한 달력 날짜
+let date = "";
+let month = "";
+let year = "";
 
-    console.log(year + " " + month + " " + date);
+// 달력 클릭이벤트
+$(document).on('click', '.date-picker', function() {
+    date = $(this).attr("data-date");
+    month = $(this).attr("data-month");
+    year = $(this).attr("data-year");
     $("#modal").addClass('is-active');
 
-    let writeDiaryhtml = `
-    <span class="block is-size-4"><strong>제목</strong></span>
-    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
-    <span class="block is-size-4 yb-6"><strong>내용</strong></span>
-    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
-    `
-
+    // 모달 일기 리스트 html
     let getDiaryListhtml = `
     <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
-    <div class="card mb-4">
+    <div class="card mb-4 modalDiary" id="modalDiary0">
         <div class="card-content">
             <div class="content">
                 <p>작성자 : 이충일</p>
@@ -341,7 +340,7 @@ $(document).on('click', '.date-picker', function() {
             </div>
         </div>
     </div>
-    <div class="card mb-4">
+    <div class="card mb-4 modalDiary" id="modalDiary1">
         <div class="card-content">
             <div class="content">
                 <p>작성자 : 이충일</p>
@@ -350,15 +349,59 @@ $(document).on('click', '.date-picker', function() {
         </div>
     </div>
     `
+
     $(".modal-card-body").html(getDiaryListhtml);
     $("#modalModify").css("display", "none");
     $("#modalDelete").css("display", "none");
-    $("#modalAdd").css("display", "none");
+    $("#modalDiaryAdd").css("display", "none");
     $("#modalAdd").css("display", "block");
 });
 
+// 모달창 닫기
 $(document).on('click','.delete', function() {
     $("#modal").removeClass('is-active');
 });
+
+// 일기추가
+$(document).on('click','#modalAdd', function() {
+    // 모달 일기 작성 html
+    let writeDiaryhtml = `
+    <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
+    <span class="block is-size-4"><strong>제목</strong></span>
+    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
+    <span class="block is-size-4 yb-6"><strong>내용</strong></span>
+    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
+    `;
+
+    $(".modal-card-body").html("");
+    $(".modal-card-body").html(writeDiaryhtml);
+    
+    $("#modalModify").css("display", "none");
+    $("#modalDelete").css("display", "none");
+    $("#modalDiaryAdd").css("display", "block");
+    $("#modalAdd").css("display", "none");
+});
+
+// 일기 리스트에서 일기 클릭 이벤트
+$(document).on('click','.modalDiary', function() {
+    // 모달 일기 작성 html
+    let writeDiaryhtml = `
+    <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
+    <span class="block is-size-4"><strong>제목</strong></span>
+    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
+    <span class="block is-size-4 yb-6"><strong>내용</strong></span>
+    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
+    `;
+    
+    $(".modal-card-body").html("");
+    $(".modal-card-body").html(writeDiaryhtml);
+    
+    $("#modalModify").css("display", "block");
+    $("#modalDelete").css("display", "block");
+    $("#modalDiaryAdd").css("display", "none");
+    $("#modalAdd").css("display", "none");
+});
+
+/* 달력 이벤트 end */
 </script>
 {% endblock %}
