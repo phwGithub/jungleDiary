@@ -346,11 +346,12 @@ $(document).on('click', '.date-picker', function() {
                 console.log(diaryList);
                 $(".modal-card-body").append(`<p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>`);
                 diaryList.forEach(element => {
-                    showMyDiary(element.writer, element.title, element.likes, element.content,element['_id']['$oid']);
+                    showMyDiary(element.user, element.title, element.likes, element.content,element['_id']['$oid']);
                 });
-                
-            }
-            else {
+            }else if(response.result =='fail'){
+                    alert(response['msg']);
+                    window.location.replace("/sign_in");
+            } else {
                 alert("서버 오류!");
             }
         }
@@ -365,7 +366,7 @@ $(document).on('click','.delete', function() {
     $("#modal").removeClass('is-active');
 });
 
-// 일기 수정
+// 일기 수정 버튼 클릭
 $(document).on('click','#modalModify', function() {
     $("#modalDiaryTitle").attr("disabled", false);
     $("#modalDiaryContent").attr("disabled", false);
@@ -374,7 +375,7 @@ $(document).on('click','#modalModify', function() {
     modalButtonControl("modalModifyConfirmClick");
 });
 
-// 일기추가
+// 일기추가 버튼 클릭
 $(document).on('click','#modalAdd', function() {
     // 모달 일기 작성 html
     let writeDiaryhtml = `
@@ -392,6 +393,78 @@ $(document).on('click','#modalAdd', function() {
     modalButtonControl("modalAddClick"); 
 });
 
+// 일기작성 버튼 클릭
+$(document).on('click','#modalDiaryAdd', function() {
+    let new_diary_title = $("#modalDiaryTitle").val();
+    let new_diary_content = $("#modalDiaryContent").val();
+    let new_diary_date = year + month + date;
+
+    $.ajax({
+        type: "POST",
+        url: "/api/appendDiary",
+        data: {'new_diary_title':new_diary_title,'new_diary_content': new_diary_content,'new_diary_date':new_diary_date},
+        success: function (response) {
+            if (response["result"] === "success") {
+                alert("일기가 추가되었습니다.");
+                window.location.replace("/showMyDiary");
+            }
+            else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
+            }
+            else {
+                alert("서버 오류!");
+            }
+        }
+    })
+});
+
+// 일기수정완료 버튼 클릭
+$(document).on('click','#modalModifyConfirm', function() {
+    let diaryId = $("#diaryHiddenId").val();
+    let diaryTitle = $("#modalDiaryTitle").val();
+    let diaryContent = $("#modalDiaryContent").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/updateDiary",
+        data: {"update_diary_id" : diaryId, "update_diary_title" : diaryTitle, "update_diary_content" : diaryContent},
+        success: function(response) {
+            if(response["result"] == "success") {
+                alert("수정이 완료되었습니다.");
+                window.location.replace("/showMyDiary");
+            } else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
+            } else {
+                alert("서버오류!");
+            }
+        }
+    });
+});
+
+// 일기삭제버튼 클릭
+$(document).on('click','#modalDelete', function() {
+    let diaryId = $("#diaryHiddenId").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/api/deleteDiary",
+        data: {"delete_diary_id" : diaryId},
+        success: function(response) {
+            if(response["result"] == "success") {
+                alert("삭제가 완료되었습니다.");
+                window.location.replace("/showMyDiary");
+            } else if(response.result =='fail'){
+                alert(response['msg']);
+                window.location.replace("/sign_in");
+            } else {
+                alert("서버오류!");
+            }
+        }
+    });
+});
+
 // 일기 리스트에서 일기 클릭 이벤트
 $(document).on('click','.modalDiary', function() {
     // 모달 일기 작성 html
@@ -402,7 +475,8 @@ $(document).on('click','.modalDiary', function() {
     let likes = $(this).find("#likes").text();
 
     let writeDiaryhtml = `
-    <p class="has-text-centered is-size-4 has-text-weight-bold" id="${id}">${year}년 ${month}월 ${date}일</p>
+    <input type="hidden" value="${id}" id="diaryHiddenId"/>
+    <p class="has-text-centered is-size-4 has-text-weight-bold" id="date">${year}년 ${month}월 ${date}일</p>
     <span class="block is-size-4"><strong>제목</strong></span>
     <input class="input mb-4 mt-2" id="modalDiaryTitle" type="text" value="${title}" disabled>
     <span class="block is-size-4 yb-6"><strong>내용</strong></span>
