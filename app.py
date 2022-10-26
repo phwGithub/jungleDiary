@@ -2,7 +2,7 @@ import time
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.json_util import dumps
-from flask import Flask, request, render_template, jsonify, redirect, url_for
+from flask import Flask, request, render_template, jsonify
 import hashlib
 import jwt
 from datetime import datetime, timedelta
@@ -12,9 +12,6 @@ client = MongoClient('localhost', 27017)  # 로컬연결
 db = client.jgDiary
 
 SECRET_KEY = 'KRAFTONJUNGLE'
-
-client = MongoClient('localhost', 27017)
-db = client.jgDiary
 
 def validate_token(token):
     try:
