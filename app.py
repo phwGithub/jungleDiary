@@ -34,14 +34,17 @@ def validate_token(token):
     #     return jsonify({'result': 'fail','msg':'토큰이 유효하지 않습니다'})
     # else:
 
-# todo /// 메인 페이지 토큰 검증 제대로 작동하지 않음!
+# 메인 페이지 토큰 검증 후 페이지 렌더링
 @app.route('/')
 def home():
     token = request.cookies.get('mytoken')
-    if validate_token(token) == '토큰만료' or '유효하지않은토큰':
+    print(token)
+    if (validate_token(token) == '토큰만료') or (validate_token(token) == '유효하지않은토큰'):
         return render_template("sign_in.html", title="정글 다이어리")
     else:
-        return render_template("monthlyDiary.html", title="정글 다이어리")
+        date = time.strftime('%Y %m %d %a', time.localtime(time.time()))
+        now_date = date.split(' ')
+        return render_template('main.html', title="오늘의 메모", date=now_date)
 
 
 # 회원가입 페이지로 이동
