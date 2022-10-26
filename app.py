@@ -25,6 +25,11 @@ def validate_token(token):
         return '유효하지않은토큰'
     else:
         return decoded
+# if validate_token(token) == '토큰만료':
+#     return render_template('sign_in.html', msg='토큰만료')
+# elif validate_token(token) =='유효하지않은토큰':
+#     return render_template('sign_in.html', msg='토큰이 유효하지 않습니다')
+# else:
 
 @app.route('/')
 def home():
@@ -49,7 +54,7 @@ def sign_up():
     result = db.user.find_one({'name': new_name})
     print("여기")
     # db에 이름이 이미 있는지 확인하기
-    if result is None: # 해당 유저가 신규면
+    if result is None:
         password_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
         doc = {
             "name": new_name,
@@ -57,7 +62,7 @@ def sign_up():
         }
         db.user.insert_one(doc)
         return jsonify({'result': 'success', 'msg': 'DB에 유저 등록 완료'})
-    else:  # 해당 유저가 존재하면
+    else:
         return jsonify({'result': 'fail', 'msg': '동일한 이름을 가진 유저가 있어서 DB에 등록 실패'})
 
 # 로그인하기
