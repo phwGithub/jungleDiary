@@ -111,6 +111,12 @@
         margin:auto;
         text-align: center;
     }
+    #daybefore {
+        cursor: pointer;
+    }
+    #dayafter {
+        cursor: pointer;
+    }
 
 </style>
 {% endblock %}
@@ -128,7 +134,7 @@
                     <p class = 'date'><strong><span id="daybefore" >< </span><span id="ymd"></span><span id="dayafter"> ></span></strong></p>
                 </div>
                 <div class="memo_input_box">
-                    <input id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
+                    <input onkeyup="if(window.event.keyCode==13){appendMemo()}" id ='new_memo'class="input is-focused memo_input" type="text" placeholder="메모를 입력해주세요">
                     <button onclick="appendMemo()" class="button is-info is-light memo_botton">메모하기</button>
                 </div>
                 <button onclick='diary_wrtie_form()' class="button is-primary write_diary_botton">일기쓰기</button>
@@ -170,6 +176,7 @@
         getMemos();
         $("#ymd").text(date_n);
         $("#ymd_diary").text(date_n);
+        $("#new_memo").focus();
     })
     //document.getElementById("daybefore").onclick = function() {daybefore()};
     $(document).on('click', "#daybefore",function() {
@@ -181,7 +188,8 @@
         date_n = month+1<10 ? year+'년 '+'0'(month+1) +'월 '+date+'일' :  year+'년 '+(month+1) +'월 '+date+'일';
         $("#ymd").text(date_n)
         $("#ymd_diary").text(date_n);
-        getMemos()
+        getMemos();
+        $("#new_memo").focus();
     })
     $(document).on('click', "#dayafter",function() {
         day.setDate(day.getDate()+1);
@@ -192,7 +200,8 @@
         date_n = month+1<10 ? year+'년 '+'0'(month+1) +'월 '+date+'일' :  year+'년 '+(month+1) +'월 '+date+'일';
         $("#ymd").text(date_n)
         $("#ymd_diary").text(date_n);
-        getMemos()
+        getMemos();
+        $("#new_memo").focus();
     })
 
     function getMemos() {
@@ -258,7 +267,13 @@
             })
         }
         else {
-            swal("오류", "메모 내용을 입력해주세요", "error");
+            $("#new_memo").attr('onkeyup',"")
+            swal("오류", "메모 내용을 입력해주세요", "error").then(function() {
+                $("#new_memo").focus();
+            });
+            setTimeout(function(){
+                $("#new_memo").attr('onkeyup',"if(window.event.keyCode==13){appendMemo()}");
+            },1000)
         }
     }
 
@@ -364,6 +379,7 @@
     function memo_wrtie_form() {
         $(".diary_input_box").hide();
         $(".memo_only").show();
+        $("#new_memo").focus();
     }
     function appendDiary() {
         append_date = month+1<10 ? String(year)+'0'+String(month+1)+String(date):String(year)+String(month+1)+String(date);
