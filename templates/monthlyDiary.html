@@ -1,7 +1,7 @@
 {% extends '/common/common.html' %} 
-{% block title %}나의 일기{% endblock %}
+{% block title %}{{title}}{% endblock %}
 {% block cdns %}
-
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 {% endblock %}
 {% block style %}
 <style>
@@ -27,7 +27,6 @@ body {
     background: #ffffff;
     padding: 15px;
     max-width: 1100px;
-    max-height: 1100px;
     margin: 0 auto;
     overflow: auto;
 }
@@ -46,7 +45,7 @@ body {
 .table-calendar {
     border-collapse: collapse;
     width: 100%;
-    height: 475px;
+    height: 460px;
 }
 
 .table-calendar td, .table-calendar th {
@@ -71,12 +70,14 @@ body {
 }
 
 /* friday */
-.date-picker:nth-child(6) {
-  color: green;
+.date-picker:nth-child(7) {
+  color: blue;
 }
 
 #monthAndYear {
     text-align: center;
+    font-size: 25px;
+    font-weight: bold;
     margin-top: 0;
 }
 
@@ -110,6 +111,11 @@ body {
     border: 1px solid #bfc5c5;
     border-radius: 3px;
     padding: 5px 1em;
+}
+
+.modal-card-title {
+    font-size: 25px;
+    text-align: center;
 }
 </style>
 {% endblock %}
@@ -150,6 +156,22 @@ body {
 
     </div>
     
+    <div class="modal" id="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">나의 일기</p>
+            <button class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          </section>
+          <footer class="modal-card-foot buttons is-right">
+            <button class="button is-success" id="modalModify">수정</button>
+            <button class="button is-danger" id="modalDelete">삭제</button>
+            <button class="button is-primary" id="modalAdd">일기추가</button>
+          </footer>
+        </div>
+    </div>
 </div>
 {% endblock %}
 {% block script %}
@@ -270,17 +292,17 @@ function showCalendar(month, year) {
                 cell.setAttribute("data-month", month + 1);
                 cell.setAttribute("data-year", year);
                 cell.setAttribute("data-month_name", months[month]);
-                cell.className = "date-picker";
+                cell.setAttribute("data-target", "modal-js-example");
+                cell.className = "date-picker js-modal-trigger";
                 cell.innerHTML = "<span>" + date + "</span>";
 
                 if ( date === today.getDate() && year === today.getFullYear() && month === today.getMonth() ) {
-                    cell.className = "date-picker selected";
+                    cell.className = "date-picker selected js-modal-trigger";
                 }
                 row.appendChild(cell);
                 date++;
             }
-
-
+        
         }
 
         tbl.appendChild(row);
@@ -292,5 +314,51 @@ function daysInMonth(iMonth, iYear) {
     return 32 - new Date(iYear, iMonth, 32).getDate();
 }
 /* 달력 출력 End */
+
+/* 달력 클릭 이벤트 */
+$(document).on('click', '.date-picker', function() {
+    let date = $(this).attr("data-date");
+    let month = $(this).attr("data-month");
+    let year = $(this).attr("data-year");
+
+    console.log(year + " " + month + " " + date);
+    $("#modal").addClass('is-active');
+
+    let writeDiaryhtml = `
+    <span class="block is-size-4"><strong>제목</strong></span>
+    <input class="input mb-4 mt-2" type="text" placeholder="제목을 입력해주세요">
+    <span class="block is-size-4 yb-6"><strong>내용</strong></span>
+    <textarea class="textarea mt-2 is-medium " placeholder="내용을 입력해주세요." rows="11"></textarea>
+    `
+
+    let getDiaryListhtml = `
+    <p class="has-text-centered is-size-4 has-text-weight-bold">${year}년 ${month}월 ${date}일</p>
+    <div class="card mb-4">
+        <div class="card-content">
+            <div class="content">
+                <p>작성자 : 이충일</p>
+                <p>제목 : 오늘도 보람찬 하루였다.</p>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-content">
+            <div class="content">
+                <p>작성자 : 이충일</p>
+                <p>제목 : 정글 0주차 정리.</p>
+            </div>
+        </div>
+    </div>
+    `
+    $(".modal-card-body").html(getDiaryListhtml);
+    $("#modalModify").css("display", "none");
+    $("#modalDelete").css("display", "none");
+    $("#modalAdd").css("display", "none");
+    $("#modalAdd").css("display", "block");
+});
+
+$(document).on('click','.delete', function() {
+    $("#modal").removeClass('is-active');
+});
 </script>
 {% endblock %}

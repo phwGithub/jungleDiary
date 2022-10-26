@@ -1,108 +1,108 @@
-<!DOCTYPE html>
-<html lang="kr">
+{% extends '/common/common.html' %}
+{% block title %}{{title}}{% endblock %}
+{% block cdns %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+{% endblock %}
+{% block style %}
+<style>
+    .wrap {
+        width: 300px;
+        margin: 100px auto;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>정글다이어리 | 회원가입 페이지</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    .field {
+        width: inherit;
+    }
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    .button {
+        width: 300px;
+        margin: auto;
+    }
 
+    .title {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+{% block script %}
+<script>
 
-    <style>
-        .wrap {
-            width: 500px;
-            margin-top: 100px;
-            margin: auto;
+    function sign_up() {
+
+        let username = $("#userid").val()
+        let password = $("#pwd").val()
+        let password_chck = $("#pwd_chck").val()
+
+        if (username == "") {
+            alert('아이디를 입력하세요!')
+            $("#input-username").focus()
+            return;
         }
 
-        .field {
-            width: inherit;
+        if (password == "") {
+            alert('비밀번호를 입력하세요!')
+            $("#input-password").focus()
+            return;
         }
-    </style>
 
-    <script>
+        if (password_chck != password) {
+            alert('비밀번호가 일치하지 않습니다')
+            $("#pwd_chck").focus()
+            return;
+        }
 
-        function sign_up() {
 
-            let username = $("#userid").val()
-            let password = $("#pwd").val()
-            let password_chck = $("#pwd_chck").val()
-
-            if (username == "") {
-                alert('아이디를 입력하세요!')
-                $("#input-username").focus()
-                return;
-            }
-
-            if (password == "") {
-                alert('비밀번호를 입력하세요!')
-                $("#input-password").focus()
-                return;
-            }
-
-            if (password_chck != password) {
-                alert('비밀번호가 일치하지 않습니다')
-                $("#pwd_chck").focus()
-                return;
-            }
-            
-
-            $.ajax({
-                type: "POST",
-                url: "/sign_up",
-                data: {
-                    new_name_give: username,
-                    new_pwd_give: password
-                },
-                success: function (response) {
-                    if (response['result'] == 'success') {
-                        let msg = response['msg']
-                        console.log(msg)
-                        alert("가입 성공!")
-                        // 회원가입 후 연결 될 페이지 todo
-                        window.location.replace("/sign_in");
-                    } 
-                    else {
-                        let msg = response['msg']
-                        alert(msg)
-                    }
+        $.ajax({
+            type: "POST",
+            url: "/sign_up",
+            data: {
+                new_name_give: username,
+                new_pwd_give: password
+            },
+            success: function (response) {
+                if (response['result'] == 'success') {
+                    let msg = response['msg']
+                    console.log(msg)
+                    alert("가입 성공!")
+                    // 회원가입 후 연결 될 페이지 todo
+                    window.location.replace("/sign_in");
                 }
-            });
-        }
+                else {
+                    let msg = response['msg']
+                    alert(msg)
+                }
+            }
+        });
+    }
 
-    </script>
+</script>
+{% endblock %}
+{% block body %}
 
 
-</head>
 
-<body>
+<div class="wrap">
 
-    
-    <div class="wrap">
-        
-        <h1 class="title">회원가입</h1>
-        <div class="field">
-            <div class="control">
-                <input class="input is-danger" id="userid" type="text" placeholder="이름을 입력하세요">
-            </div>
+    <h1 class="title">회원가입</h1>
+    <div class="field">
+        <div class="control">
+            <input class="input is-danger" id="userid" type="text" placeholder="아이디(본명)를 입력하세요">
         </div>
+    </div>
 
-        <div class="field">
-            <div class="control">
-                <input class="input is-danger" id="pwd" type="password" placeholder="비밀번호를 입력하세요">
-            </div>
+    <div class="field">
+        <div class="control">
+            <input class="input is-danger" id="pwd" type="password" placeholder="비밀번호를 입력하세요">
         </div>
+    </div>
 
-        <div class="field">
-            <div class="control">
-                <input class="input is-danger" id="pwd_chck" type="password" placeholder="비밀번호 확인">
-            </div>
+    <div class="field">
+        <div class="control">
+            <input class="input is-danger" id="pwd_chck" type="password" placeholder="비밀번호 확인">
         </div>
+    </div>
 
-        <!-- 이 부분은 시간이 있으면 
+    <!-- 이 부분은 시간이 있으면 
         <div class="field">
             <div class="control">
                 <div class="select">
@@ -118,20 +118,18 @@
             </div>
         </div> -->
 
-        <!-- 이 부분은 시간이 있으면
+    <!-- 이 부분은 시간이 있으면
         <div class="field">
             <div class="control">
                 <input class="input is-danger" type="text" placeholder="질문에 대한 답변을 입력해주세요">
             </div>
         </div> -->
 
-        <div class="field is-grouped">
-            <div class="control">
-                <button class="button is-link" onclick="sign_up()">가입하기</button>
-            </div>
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-success" onclick="sign_up()">가입하기</button>
         </div>
     </div>
+</div>
 
-</body>
-
-</html>
+{% endblock %}
