@@ -21,7 +21,7 @@
   </style>
   <script>
 
-    // 로그인한 상태이면 사용자 이름 + 로그아웃 버튼만 띄우기
+    // nav바에 로그인한 상태이면 사용자 이름 + 로그아웃 버튼만 띄우기
     $(document).ready(function () {
       $.ajax({
         type: "GET",
@@ -30,12 +30,12 @@
         success: function (response) {
           if (response['result'] == 'success') {
             let name = response['id']
-            console.log(name)
-            $('#user-state').empty()
+            console.log(name, "님 로그인")
+            $('#user-menu').empty()
             let temp_html =
               `<span class="greet" > <i class="far fa-user"></i>   <span style="font-weight: bold; color:#00d67a;">${name}</span>님 환영합니다!</span>
               <button class="button is-light" onclick='signOut()'> 로그아웃 </button>`
-            $('#user-state').append(temp_html)
+            $('#user-menu').append(temp_html)
 
           }
         }
@@ -46,17 +46,7 @@
     function signOut() {
       $.removeCookie('mytoken', { path: '/' });
       swal("로그아웃", "로그아웃 성공", "info").then(function() {
-        $('#user-info').empty()
-        let temp_html =
-          `
-        <div class="buttons">
-              <a class="button is-primary" a href='/sign_up'>
-                <strong>회원가입</strong>
-              </a>
-              <a class="button is-light" a href='/sign_in'> 로그인 </a>
-            </div>
-        `
-        $('#user-info').append(temp_html)
+        $('#user-menu').empty()
         window.location.href = '/';
       });
     }
@@ -92,7 +82,7 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <!-- ▽ div 안에 회원가입, 로그인, 로그아웃, 사용자 환영 메시지가 들어감 -->
-          <div class="buttons" id="user-state">
+          <div class="buttons" id="user-menu">
           </div>
 
         </div>
