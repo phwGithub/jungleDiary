@@ -32,9 +32,18 @@
         let username = $("#userid").val()
         let password = $("#pwd").val()
         let password_chck = $("#pwd_chck").val()
+        
 
         if (username == "") {
             swal("오류", '아이디(이름)를 입력하세요!', "error").then(function() {
+                $("#input-username").focus()
+            });
+            return;
+        }
+        
+        var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+        if (special_pattern.test(username) == true) {
+            swal("오류", '아이디에 특수문자는 사용 할 수 없습니다', "error").then(function() {
                 $("#input-username").focus()
             });
             return;
@@ -88,7 +97,7 @@
     <h1 class="title signup">회원가입</h1>
     <div class="field signup">
         <div class="control">
-            <input class="input is-danger" id="userid" type="text" placeholder="아이디를 입력하세요(이름 사용 권장)">
+            <input class="input is-danger" id="userid" type="text" placeholder="아이디(이름)를 입력하세요">
         </div>
     </div>
 
